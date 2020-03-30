@@ -1,0 +1,88 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "https://github.com/thomas550i/cordova-plugin-doze-Optimize",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "https://github.com/thomas550i/cordova-plugin-doze-Optimize",
+        "spec": "git+https://github.com/thomas550i/cordova-plugin-doze-Optimize.git",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:thomas550i/cordova-plugin-doze-Optimize.git",
+          "sshUrl": "git+ssh://git@github.com/thomas550i/cordova-plugin-doze-Optimize.git",
+          "httpsUrl": "git+https://github.com/thomas550i/cordova-plugin-doze-Optimize.git",
+          "gitUrl": "git://github.com/thomas550i/cordova-plugin-doze-Optimize.git",
+          "shortcut": "github:thomas550i/cordova-plugin-doze-Optimize",
+          "directUrl": "https://raw.githubusercontent.com/thomas550i/cordova-plugin-doze-Optimize/master/package.json"
+        }
+      },
+      "/Users/andreamaioli/Documents/INDENG/inde-launcher"
+    ]
+  ],
+  "_from": "git+https://github.com/thomas550i/cordova-plugin-doze-Optimize.git",
+  "_id": "cordova-plugin-doze-Optimize@0.1.0",
+  "_inCache": true,
+  "_location": "/cordova-plugin-doze-Optimize",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "https://github.com/thomas550i/cordova-plugin-doze-Optimize",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "https://github.com/thomas550i/cordova-plugin-doze-Optimize",
+    "spec": "git+https://github.com/thomas550i/cordova-plugin-doze-Optimize.git",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:thomas550i/cordova-plugin-doze-Optimize.git",
+      "sshUrl": "git+ssh://git@github.com/thomas550i/cordova-plugin-doze-Optimize.git",
+      "httpsUrl": "git+https://github.com/thomas550i/cordova-plugin-doze-Optimize.git",
+      "gitUrl": "git://github.com/thomas550i/cordova-plugin-doze-Optimize.git",
+      "shortcut": "github:thomas550i/cordova-plugin-doze-Optimize",
+      "directUrl": "https://raw.githubusercontent.com/thomas550i/cordova-plugin-doze-Optimize/master/package.json"
+    }
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/thomas550i/cordova-plugin-doze-Optimize.git#73152f0b926da55195b6b6e42f75577d62a04fe5",
+  "_shasum": "9f27fd4649b17f84ca396d9de2b3255e4a4cff78",
+  "_shrinkwrap": null,
+  "_spec": "https://github.com/thomas550i/cordova-plugin-doze-Optimize",
+  "_where": "/Users/andreamaioli/Documents/INDENG/inde-launcher",
+  "author": {
+    "name": "thomas550i"
+  },
+  "bugs": {
+    "url": "https://github.com/thomas550i/cordova-plugin-doze-Optimize/issues"
+  },
+  "cordova": {
+    "id": "cordova.plugins.DozeOptimize",
+    "platforms": [
+      "android"
+    ]
+  },
+  "dependencies": {},
+  "description": "If you want to run your application in backround mode and it shoud standby even battery optimization enabled, then this Cordova plugin is used to check the doze or battery optimization status and also it help to request whitlest popup for battery optimization",
+  "devDependencies": {},
+  "gitHead": "73152f0b926da55195b6b6e42f75577d62a04fe5",
+  "homepage": "https://github.com/thomas550i/cordova-plugin-doze-Optimize#readme",
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "license": "ISC",
+  "name": "cordova-plugin-doze-Optimize",
+  "optionalDependencies": {},
+  "readme": "# cordova-plugin-doze-Optimize\n\n# Whitelisting an Android application programmatically \n\nIf you want to run your application in background mode and it should standby even battery optimization enabled, then this Cordova plugin is used to check the doze or battery optimization status and also it help to request whitelist popup for battery optimization.\n\nThis will also help check if your app is whitelisted from the Data Saver options in Android 7+ \n\n\n\n## Getting Started\n\nYou have to install this plugin in to your cordova project\n\n### Installing\n\nWhat things you need to install the software and how to install them\n\n```\ncordova plugin add https://github.com/thomas550i/cordova-plugin-doze-Optimize\n```\n\n### Usage \n\nSample Code to get the status of your app \n\n```\ncordova.plugins.DozeOptimize.IsIgnoringBatteryOptimizations(function (responce){\n      console.log(\"IsIgnoringBatteryOptimizations: \"+responce);\n          if(responce==\"false\")\n          {\n            console.log(\"Application not Ignoring Battery Optimizations\");\n          }\n          else\n          {\n            console.log(\"Application already Ignoring Battery Optimizations\");\n          }\t\t\n    }, function (error){\n    console.error(\"IsIgnoringBatteryOptimizations Error\"+error);\n    \n    });\n```\n\n```\n   cordova.plugins.DozeOptimize.IsIgnoringDataSaver(function (response){\n        if(responce==\"false\")\n        {\n            console.log(\"Application not Ignoring data saver\");\n        }\n        else\n        {\n            console.log(\"Application already Ignoring data saver and is probably whitelisted.\");\n        }\t\t\n   }, function (error){\n       console.log(error);\n   }); \n```\n\nSample Code to Popup ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to whitelist your app.\n\n```\n    cordova.plugins.DozeOptimize.RequestOptimizations(function (responce){\n        console.log(responce); // Will give \"Optimizations Requested Successfully\"\n    }, function (error){\n        console.error(\"BatteryOptimizations Request Error\"+error);\t\t\t\n    });\n```\n\nFull Code of usage with step one and two\n\n```\ncordova.plugins.DozeOptimize.IsIgnoringBatteryOptimizations(function (responce){\n      console.log(\"IsIgnoringBatteryOptimizations: \"+responce);\n          if(responce==\"false\")\n          {\n            cordova.plugins.DozeOptimize.RequestOptimizations(function (responce){\n              console.log(responce);\n            }, function (error){\n            console.error(\"BatteryOptimizations Request Error\"+error);\t\t\t\n            });\n          }\n          else\n          {\n            console.log(\"Application already Ignoring Battery Optimizations\");\n          }\t\t\n    }, function (error){\n    console.error(\"IsIgnoringBatteryOptimizations Error\"+error);    \n    });\n```\n### Important notes\n\nBattery Optimization will work only Android 6.0 and higher. if you using this plugin below 6.0 you will get \"BATTERY_OPTIMIZATIONS Not available\" as a result. \n\n# Contributors are welcome! send Request to thomas550i@gmail.com\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomas550i/cordova-plugin-doze-Optimize.git"
+  },
+  "version": "0.1.0"
+}

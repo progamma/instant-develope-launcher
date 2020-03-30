@@ -1,0 +1,141 @@
+{
+  "_args": [
+    [
+      {
+        "name": "cordova-plugin-globalization",
+        "raw": "cordova-plugin-globalization",
+        "rawSpec": "",
+        "scope": null,
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/andreamaioli/Documents/INDENG/inde-launcher"
+    ]
+  ],
+  "_from": "cordova-plugin-globalization@latest",
+  "_id": "cordova-plugin-globalization@1.0.7",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/cordova-plugin-globalization",
+  "_nodeVersion": "6.10.1",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/cordova-plugin-globalization-1.0.7.tgz_1493685642490_0.06781368516385555"
+  },
+  "_npmUser": {
+    "email": "maj.fil@gmail.com",
+    "name": "filmaj"
+  },
+  "_npmVersion": "3.10.10",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "cordova-plugin-globalization",
+    "raw": "cordova-plugin-globalization",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-globalization/-/cordova-plugin-globalization-1.0.7.tgz",
+  "_shasum": "b9941848fb5eb5dcd633e6971118fad638f648cf",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-globalization",
+  "_where": "/Users/andreamaioli/Documents/INDENG/inde-launcher",
+  "author": {
+    "name": "Apache Software Foundation"
+  },
+  "bugs": {
+    "url": "https://github.com/apache/cordova-plugin-globalization/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-globalization",
+    "platforms": [
+      "android",
+      "amazon-fireos",
+      "ubuntu",
+      "firefoxos",
+      "ios",
+      "wp7",
+      "wp8",
+      "windows",
+      "tizen",
+      "blackberry10"
+    ]
+  },
+  "dependencies": {},
+  "description": "Cordova Globalization Plugin",
+  "devDependencies": {
+    "jshint": "^2.6.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "b9941848fb5eb5dcd633e6971118fad638f648cf",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-globalization/-/cordova-plugin-globalization-1.0.7.tgz"
+  },
+  "engines": {
+    "cordovaDependencies": {
+      "2.0.0": {
+        "cordova": ">100"
+      }
+    }
+  },
+  "homepage": "https://github.com/apache/cordova-plugin-globalization#readme",
+  "keywords": [
+    "cordova",
+    "globalization",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-amazon-fireos",
+    "cordova-ubuntu",
+    "cordova-firefoxos",
+    "cordova-ios",
+    "cordova-wp7",
+    "cordova-wp8",
+    "cordova-windows",
+    "cordova-tizen",
+    "cordova-blackberry10"
+  ],
+  "license": "Apache-2.0",
+  "maintainers": [
+    {
+      "email": "bowserj@apache.org",
+      "name": "bowserj"
+    },
+    {
+      "email": "csantana23@gmail.com",
+      "name": "csantanapr"
+    },
+    {
+      "email": "maj.fil@gmail.com",
+      "name": "filmaj"
+    },
+    {
+      "email": "purplecabbage@gmail.com",
+      "name": "purplecabbage"
+    },
+    {
+      "email": "shazron@gmail.com",
+      "name": "shazron"
+    },
+    {
+      "email": "stevengill97@gmail.com",
+      "name": "stevegill"
+    }
+  ],
+  "name": "cordova-plugin-globalization",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apache/cordova-plugin-globalization.git"
+  },
+  "scripts": {
+    "jshint": "jshint www && jshint src && jshint tests",
+    "test": "npm run jshint"
+  },
+  "types": "./types/index.d.ts",
+  "version": "1.0.7"
+}

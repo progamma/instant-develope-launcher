@@ -1,0 +1,228 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.progamma.instantdeveloper" ios-CFBundleVersion="2.10.04.190502" version="19.05.02" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>InstaLauncher</name>
+    <description>
+    Instant Developer App Launcher
+  </description>
+    <author email="support@instantdeveloper.com" href="http://www.instantdeveloper.com">
+    Pro Gamma SpA
+  </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="file://*/*" />
+    <allow-intent href="data:*" />
+    <allow-navigation href="http://*/*" />
+    <allow-navigation href="https://*/*" />
+    <allow-navigation href="file://*/*" />
+    <allow-navigation href="data:*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+        <access launch-external="yes" origin="mailto:*" />
+        <hook src="hooks/after_prepare_android.js" type="after_prepare" />
+        <hook src="hooks/before_prepare_android.js" type="before_prepare" />
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itmss:*" />
+        <allow-intent href="itms-apps:*" />
+        <allow-intent href="itmss-apps:*" />
+    </platform>
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="BackupWebStorage" value="none" />
+    <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="BackgroundColor" value="0x000000ff" />
+    <preference name="---StatusBarOverlaysWebView" value="true" />
+    <preference name="---FullScreen" value="true" />
+    <preference name="---StatusBarBackgroundColor" value="#00000000" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="FullScreen" value="false" />
+    <preference name="StatusBarBackgroundColor" value="#39403A" />
+    <preference name="SplashScreen" value="screen" />
+    <preference name="AutoHideSplashScreen" value="false" />
+    <preference name="SplashShowOnlyFirstTime" value="false" />
+    <preference name="ShowSplashScreenSpinner" value="true" />
+    <preference name="SplashMaintainAspectRatio" value="true" />
+    <preference name="FadeSplashScreen" value="true" />
+    <preference name="FadeSplashScreenDuration" value="500" />
+    <preference name="Orientation" value="default" />
+    <preference name="android-targetSdkVersion" value="28" />
+    <preference name="android-minSdkVersion" value="21" />
+    <preference name="Suppresses3DTouchGesture" value="true" />
+    <preference name="AllowInlineMediaPlayback" value="true" />
+    <preference name="target-device" value="universal" />
+    <platform name="android">
+        <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
+        <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
+        <icon density="hdpi" src="resources/android/icon/drawable-hdpi-icon.png" />
+        <icon density="xhdpi" src="resources/android/icon/drawable-xhdpi-icon.png" />
+        <icon density="xxhdpi" src="resources/android/icon/drawable-xxhdpi-icon.png" />
+        <icon density="xxxhdpi" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
+        <splash density="land-ldpi" src="resources/android/splash/drawable-land-ldpi-screen.png" />
+        <splash density="land-mdpi" src="resources/android/splash/drawable-land-mdpi-screen.png" />
+        <splash density="land-hdpi" src="resources/android/splash/drawable-land-hdpi-screen.png" />
+        <splash density="land-xhdpi" src="resources/android/splash/drawable-land-xhdpi-screen.png" />
+        <splash density="land-xxhdpi" src="resources/android/splash/drawable-land-xxhdpi-screen.png" />
+        <splash density="land-xxxhdpi" src="resources/android/splash/drawable-land-xxxhdpi-screen.png" />
+        <splash density="port-ldpi" src="resources/android/splash/drawable-port-ldpi-screen.png" />
+        <splash density="port-mdpi" src="resources/android/splash/drawable-port-mdpi-screen.png" />
+        <splash density="port-hdpi" src="resources/android/splash/drawable-port-hdpi-screen.png" />
+        <splash density="port-xhdpi" src="resources/android/splash/drawable-port-xhdpi-screen.png" />
+        <splash density="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
+        <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
+        <preference name="android-manifest/application/@android:usesCleartextTraffic" value="true" />
+    </platform>
+    <platform name="ios">
+        <icon height="57" src="resources/ios/icon/icon.png" width="57" />
+        <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
+        <icon height="20" src="resources/ios/icon/icon-20.png" width="20" />
+        <icon height="40" src="resources/ios/icon/icon-40.png" width="40" />
+        <icon height="80" src="resources/ios/icon/icon-40@2x.png" width="80" />
+        <icon height="120" src="resources/ios/icon/icon-40@3x.png" width="120" />
+        <icon height="50" src="resources/ios/icon/icon-50.png" width="50" />
+        <icon height="100" src="resources/ios/icon/icon-50@2x.png" width="100" />
+        <icon height="60" src="resources/ios/icon/icon-60.png" width="60" />
+        <icon height="120" src="resources/ios/icon/icon-60@2x.png" width="120" />
+        <icon height="180" src="resources/ios/icon/icon-60@3x.png" width="180" />
+        <icon height="72" src="resources/ios/icon/icon-72.png" width="72" />
+        <icon height="144" src="resources/ios/icon/icon-72@2x.png" width="144" />
+        <icon height="76" src="resources/ios/icon/icon-76.png" width="76" />
+        <icon height="152" src="resources/ios/icon/icon-76@2x.png" width="152" />
+        <icon height="167" src="resources/ios/icon/icon-83.5@2x.png" width="167" />
+        <icon height="29" src="resources/ios/icon/icon-small.png" width="29" />
+        <icon height="58" src="resources/ios/icon/icon-small@2x.png" width="58" />
+        <icon height="87" src="resources/ios/icon/icon-small@3x.png" width="87" />
+        <icon height="1024" src="resources/ios/ios-marketing.jpg" width="1024" />
+        <splash height="1136" src="resources/ios/splash/Default-568h@2x~iphone.png" width="640" />
+        <splash height="1334" src="resources/ios/splash/Default-667h.png" width="750" />
+        <splash height="2208" src="resources/ios/splash/Default-736h.png" width="1242" />
+        <splash height="1242" src="resources/ios/splash/Default-Landscape-736h.png" width="2208" />
+        <splash height="1536" src="resources/ios/splash/Default-Landscape@2x~ipad.png" width="2048" />
+        <splash height="768" src="resources/ios/splash/Default-Landscape~ipad.png" width="1024" />
+        <splash height="2048" src="resources/ios/splash/Default-Portrait@2x~ipad.png" width="1536" />
+        <splash height="1024" src="resources/ios/splash/Default-Portrait~ipad.png" width="768" />
+        <splash height="960" src="resources/ios/splash/Default@2x~iphone.png" width="640" />
+        <splash height="480" src="resources/ios/splash/Default~iphone.png" width="320" />
+        <splash height="2436" src="resources/ios/splash/Default-2436h.png" width="1125" />
+        <splash height="1125" src="resources/ios/splash/Default-Landscape-2436h.png" width="2436" />
+        <config-file parent="UISupportedInterfaceOrientations" platform="ios" target="*-Info.plist">
+            <array>
+                <string>UIInterfaceOrientationPortrait</string>
+                <string>UIInterfaceOrientationPortraitUpsideDown</string>
+                <string>UIInterfaceOrientationLandscapeLeft</string>
+                <string>UIInterfaceOrientationLandscapeRight</string>
+            </array>
+        </config-file>
+        <config-file parent="UISupportedInterfaceOrientations~ipad" platform="ios" target="*-Info.plist">
+            <array>
+                <string>UIInterfaceOrientationPortrait</string>
+                <string>UIInterfaceOrientationPortraitUpsideDown</string>
+                <string>UIInterfaceOrientationLandscapeLeft</string>
+                <string>UIInterfaceOrientationLandscapeRight</string>
+            </array>
+        </config-file>
+        <config-file overwrite="true" parent="CFBundleDevelopmentRegion" platform="ios" target="*-Info.plist">
+            <string>English</string>
+        </config-file>
+        <config-file overwrite="true" parent="NSBluetoothPeripheralUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app need to access bluetooth services</string>
+        </config-file>
+        <config-file overwrite="true" parent="NSBluetoothAlwaysUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app need to always access bluetooth services</string>
+        </config-file>
+        <config-file overwrite="true" parent="NSPhotoLibraryUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app need to access your photo library</string>
+        </config-file>
+        <config-file overwrite="true" parent="NSCameraUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app need to access your camera to scan QR Codes</string>
+        </config-file>
+        <config-file overwrite="true" parent="NSLocationAlwaysUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app requires location services always</string>
+        </config-file>
+        <config-file overwrite="true" parent="NSLocationAlwaysAndWhenInUseUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app requires location services always and when in use</string>
+        </config-file>
+        <config-file overwrite="true" parent="NSLocationUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app requires location services</string>
+        </config-file>
+        <config-file overwrite="true" parent="NSLocationWhenInUseUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app requires location services when in use</string>
+        </config-file>
+        <config-file overwrite="true" parent="ITSAppUsesNonExemptEncryption" platform="ios" target="*-Info.plist">
+            <string>false</string>
+        </config-file>
+        <config-file overwrite="true" parent="NSFaceIDUsageDescription" platform="ios" target="*-Info.plist">
+            <string>For easy authentication</string>
+        </config-file>
+        <config-file parent="LSApplicationQueriesSchemes" platform="ios" target="*-Info.plist">
+            <array>
+                <string>twitter</string>
+                <string>whatsapp</string>
+                <string>fb</string>
+                <string>comgooglemaps</string>
+                <string>skype</string>
+                <string>fb-messenger</string>
+                <string>fbapi</string>
+                <string>fb-messenger-api</string>
+                <string>fbauth2</string>
+                <string>fbshareextension</string>
+                <string>linkedin</string>
+                <string>linkedin-sdk2</string>
+                <string>linkedin-sdk</string>
+            </array>
+        </config-file>
+    </platform>
+    <plugin name="cordova-plugin-appavailability" spec="~0.4.2" />
+    <plugin name="phonegap-nfc" spec="^0.7.0">
+        <variable name="NFC_USAGE_DESCRIPTION" value="Read NFC Tags" />
+    </plugin>
+    <plugin name="cordova-plugin-save-image" spec="^0.2.5">
+        <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
+        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value=" " />
+    </plugin>
+    <plugin name="cordova-plugin-add-swift-support" spec="^1.7.0" />
+    <plugin name="cordova-plugin-x-socialsharing" spec="^5.2.0" />
+    <plugin name="cordova-plugin-geolocation" spec="^2.4.3">
+        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="This app requires location services" />
+    </plugin>
+    <plugin name="cordova-plugin-dialogs" spec="^1.3.3" />
+    <plugin name="cordova-plugin-file-transfer" spec="^1.6.3" />
+    <plugin name="phonegap-plugin-barcodescanner" spec="^6.0.8">
+        <variable name="CAMERA_USAGE_DESCRIPTION" value="This app needs to access your camera" />
+    </plugin>
+    <plugin name="cordova-plugin-app-event" spec="^1.2.1" />
+    <plugin name="cordova-plugin-compat" spec="^1.2.0" />
+    <plugin name="cordova-plugin-vibration" spec="^2.1.5" />
+    <plugin name="cordova-plugin-screen-orientation" spec="^2.0.1" />
+    <plugin name="cordova-plugin-network-information" spec="^1.3.3" />
+    <plugin name="cordova-plugin-insomnia" spec="^4.3.0" />
+    <plugin name="cordova-plugin-globalization" spec="^1.0.7" />
+    <plugin name="cordova-plugin-file-opener2" spec="^2.0.19" />
+    <plugin name="cordova-plugin-file" spec="^4.3.3" />
+    <plugin name="cordova-plugin-device-orientation" spec="^1.0.7" />
+    <plugin name="cordova-plugin-device-name" spec="^1.3.0" />
+    <plugin name="cordova-plugin-device-motion" spec="^1.2.5" />
+    <plugin name="cordova-plugin-device" spec="^1.1.6" />
+    <plugin name="cordova-plugin-battery-status" spec="^1.2.4" />
+    <plugin name="com.unarin.cordova.beacon" spec="^3.5.2" />
+    <plugin name="cordova-plugin-camera" spec="^2.4.1">
+        <variable name="CAMERA_USAGE_DESCRIPTION" value="This app needs to access your camera" />
+        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="This app needs to access your photo library" />
+    </plugin>
+    <plugin name="cordova-plugin-statusbar" spec="^2.4.0" />
+    <plugin name="cordova-plugin-disable-ios11-statusbar" spec="^1.0.0" />
+    <plugin name="com.darktalker.cordova.screenshot" spec="git+https://github.com/gitawego/cordova-screenshot.git" />
+    <plugin name="cordova-plugin-splashscreen" spec="^5.0.2" />
+    <plugin name="cordova-plugin-advanced-http" spec="^2.0.2" />
+    <plugin name="cordova-plugin-keychain-touch-id" spec="^3.2.1">
+        <variable name="FACEID_USAGE_DESCRIPTION" value="For easy authentication" />
+    </plugin>
+    <plugin name="cordova.plugins.DozeOptimize" spec="https://github.com/thomas550i/cordova-plugin-doze-Optimize" />
+    <plugin name="cordova-plugin-inappbrowser-wkwebview" spec="^1.0.7" />
+    <plugin name="cordova-plugin-wkwebview-engine" spec="^1.2.1" />
+</widget>

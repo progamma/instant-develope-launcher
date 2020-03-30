@@ -1,0 +1,105 @@
+{
+  "_args": [
+    [
+      {
+        "name": "cordova-plugin-save-image",
+        "raw": "cordova-plugin-save-image",
+        "rawSpec": "",
+        "scope": null,
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/andreamaioli/Documents/INDENG/inde-launcher"
+    ]
+  ],
+  "_from": "cordova-plugin-save-image@latest",
+  "_id": "cordova-plugin-save-image@0.2.5",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/cordova-plugin-save-image",
+  "_nodeVersion": "6.9.2",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/cordova-plugin-save-image-0.2.5.tgz_1499686323215_0.3524057902395725"
+  },
+  "_npmUser": {
+    "email": "sebastian.schirmer@quiply.com",
+    "name": "leschirmeur"
+  },
+  "_npmVersion": "3.10.9",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "cordova-plugin-save-image",
+    "raw": "cordova-plugin-save-image",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-save-image/-/cordova-plugin-save-image-0.2.5.tgz",
+  "_shasum": "3960b5240c2d6b02f26dd190c62afa8dc35489d2",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-save-image",
+  "_where": "/Users/andreamaioli/Documents/INDENG/inde-launcher",
+  "author": {
+    "email": "hello@quiply.com",
+    "name": "Quiply Technologies GmbH",
+    "url": "http://www.quiply.com"
+  },
+  "bugs": {
+    "url": "https://github.com/quiply/SaveImage/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-save-image",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  },
+  "dependencies": {},
+  "description": "This plugin allows you to save an image file to the iOS Photo Library or Android Gallery.",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "3960b5240c2d6b02f26dd190c62afa8dc35489d2",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-save-image/-/cordova-plugin-save-image-0.2.5.tgz"
+  },
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "gitHead": "783a69df7ed3e929a2277fc0563e09708966ce04",
+  "homepage": "https://github.com/quiply/SaveImage#readme",
+  "issue": "https://github.com/quiply/SaveImage/issues",
+  "keywords": [
+    "image",
+    "photo library",
+    "camera roll",
+    "ionic",
+    "cordova",
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "email": "sebastian.schirmer@quiply.com",
+      "name": "leschirmeur"
+    }
+  ],
+  "name": "cordova-plugin-save-image",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quiply/SaveImage.git"
+  },
+  "scripts": {},
+  "version": "0.2.5"
+}

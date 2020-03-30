@@ -1,0 +1,131 @@
+{
+  "_args": [
+    [
+      {
+        "name": "cordova-plugin-screen-orientation",
+        "raw": "cordova-plugin-screen-orientation",
+        "rawSpec": "",
+        "scope": null,
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/andreamaioli/Documents/INDENG/inde-launcher"
+    ]
+  ],
+  "_from": "cordova-plugin-screen-orientation@latest",
+  "_id": "cordova-plugin-screen-orientation@2.0.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/cordova-plugin-screen-orientation",
+  "_nodeVersion": "6.10.1",
+  "_npmOperationalInternal": {
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/cordova-plugin-screen-orientation-2.0.1.tgz_1493685651107_0.03332542581483722"
+  },
+  "_npmUser": {
+    "email": "maj.fil@gmail.com",
+    "name": "filmaj"
+  },
+  "_npmVersion": "3.10.10",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "cordova-plugin-screen-orientation",
+    "raw": "cordova-plugin-screen-orientation",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-screen-orientation/-/cordova-plugin-screen-orientation-2.0.1.tgz",
+  "_shasum": "d608fd6cdd7e0b58bae3107768ac930af01ff437",
+  "_shrinkwrap": null,
+  "_spec": "cordova-plugin-screen-orientation",
+  "_where": "/Users/andreamaioli/Documents/INDENG/inde-launcher",
+  "author": {
+    "name": "gbenvenuti"
+  },
+  "bugs": {
+    "url": "https://github.com/apache/cordova-plugin-screen-orientation/issues"
+  },
+  "cordova": {
+    "id": "cordova-plugin-screen-orientation",
+    "platforms": [
+      "android",
+      "ios",
+      "wp8"
+    ]
+  },
+  "dependencies": {},
+  "description": "Adds Screen Orientation API lock and unlock functions to the global screen object in android, iOS, WP8, W8.1, and BB10.",
+  "devDependencies": {
+    "jshint": "^2.9.4"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "d608fd6cdd7e0b58bae3107768ac930af01ff437",
+    "tarball": "https://registry.npmjs.org/cordova-plugin-screen-orientation/-/cordova-plugin-screen-orientation-2.0.1.tgz"
+  },
+  "engines": {
+    "cordovaDependencies": {
+      "3.0.0": {
+        "cordova": ">100"
+      }
+    }
+  },
+  "homepage": "https://github.com/apache/cordova-plugin-screen-orientation#readme",
+  "keywords": [
+    "cordova",
+    "device",
+    "ecosystem:cordova",
+    "screen",
+    "orientation",
+    "portrait",
+    "landscape"
+  ],
+  "license": "Apache-2.0",
+  "maintainers": [
+    {
+      "email": "bowserj@apache.org",
+      "name": "bowserj"
+    },
+    {
+      "email": "maj.fil@gmail.com",
+      "name": "filmaj"
+    },
+    {
+      "email": "grant.benvenuti@gmail.com",
+      "name": "gbenvenuti"
+    },
+    {
+      "email": "purplecabbage@gmail.com",
+      "name": "purplecabbage"
+    },
+    {
+      "email": "shazron@gmail.com",
+      "name": "shazron"
+    },
+    {
+      "email": "stevengill97@gmail.com",
+      "name": "stevegill"
+    },
+    {
+      "email": "tony.homer@intel.com",
+      "name": "tony--"
+    }
+  ],
+  "name": "cordova-plugin-screen-orientation",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apache/cordova-plugin-screen-orientation.git"
+  },
+  "scripts": {
+    "jshint": "node node_modules/jshint/bin/jshint www && node node_modules/jshint/bin/jshint src && node node_modules/jshint/bin/jshint demo/www",
+    "test": "npm run jshint"
+  },
+  "version": "2.0.1"
+}

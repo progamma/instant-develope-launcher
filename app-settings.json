@@ -1,0 +1,12 @@
+[
+  {
+    "type": "group",
+    "title": "Common",
+    "items": [{
+        "title": "Enable debug mode",
+        "type": "toggle",
+        "default": false,
+        "key": "debugMode"
+      }]
+  }
+]
