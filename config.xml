@@ -32,6 +32,7 @@
         <allow-intent href="itmss:*" />
         <allow-intent href="itms-apps:*" />
         <allow-intent href="itmss-apps:*" />
+        <hook src="hooks/after_prepare_ios.js" type="after_prepare" />
     </platform>
     <preference name="DisallowOverscroll" value="true" />
     <preference name="BackupWebStorage" value="none" />
@@ -223,6 +224,6 @@
         <variable name="FACEID_USAGE_DESCRIPTION" value="For easy authentication" />
     </plugin>
     <plugin name="cordova.plugins.DozeOptimize" spec="https://github.com/thomas550i/cordova-plugin-doze-Optimize" />
-    <plugin name="cordova-plugin-inappbrowser-wkwebview" spec="^1.0.7" />
     <plugin name="cordova-plugin-wkwebview-engine" spec="^1.2.1" />
+    <plugin name="cordova-plugin-inappbrowser" spec="^3.2.0" />
 </widget>

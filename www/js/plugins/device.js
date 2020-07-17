@@ -134,7 +134,7 @@ Plugin.Device.init = function (cb)
 /*
  * Returns any info for this device
  */
-Plugin.Device.getProp = function ()
+Plugin.Device.getProp = function (app)
 {
   var p = {};
   p.model = this.model;
@@ -163,6 +163,11 @@ Plugin.Device.getProp = function ()
   if (Shell.profileData && Shell.profileData.username)
     p.username = Shell.profileData.username;
   //
+  // Send user segment to the app (if any)
+  var userSegments = JSON.parse(localStorage.getItem("user-segments") || "{}");
+  if (app && userSegments[app.name])
+    p.userSegment = userSegments[app.name];
+  //
   return p;
 };
 
@@ -171,7 +176,7 @@ Plugin.Device.getProp = function ()
  */
 Plugin.Device.startApp = function (app)
 {
-  app.setProp(this.getProp());
+  app.setProp(this.getProp(app));
   if (app.root)
     app.setProp({rootApp: true}, true);
 };

@@ -128,6 +128,7 @@
   NSLog(@"Using WKWebView");
 
   [self addURLObserver];
+  [self keyboardDisplayDoesNotRequireUserAction];
 }
 
 -(void) onReset {

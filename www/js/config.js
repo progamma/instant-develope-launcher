@@ -63,7 +63,8 @@ Shell.config = {
     "Speech": {},
     "Linkedin": {},
     "Ble": {},
-    "Pdf": {}
+    "Pdf": {},
+    "SignInWithApple": {}
   },
   "strings": {
     "title": "Instant Developer Application Container",

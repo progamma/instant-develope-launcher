@@ -193,10 +193,6 @@ AppMan.loadApps = function ()
   }
   //
   if (list) {
-    // List may contains more than one configuration per app (each one having different user segment).
-    // So purge the list in order to have just one configuration per app
-    list = AppMan.purgeList(list);
-    //
     for (var i = 0; i < list.length; i++) {
       var app = new AppDef(list[i]);
       if (app.isExpired()) {
