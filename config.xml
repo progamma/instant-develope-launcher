@@ -52,7 +52,7 @@
     <preference name="FadeSplashScreen" value="true" />
     <preference name="FadeSplashScreenDuration" value="500" />
     <preference name="Orientation" value="default" />
-    <preference name="android-targetSdkVersion" value="28" />
+    <preference name="android-targetSdkVersion" value="29" />
     <preference name="android-minSdkVersion" value="21" />
     <preference name="Suppresses3DTouchGesture" value="true" />
     <preference name="AllowInlineMediaPlayback" value="true" />
@@ -130,6 +130,9 @@
         <config-file overwrite="true" parent="CFBundleDevelopmentRegion" platform="ios" target="*-Info.plist">
             <string>English</string>
         </config-file>
+        <config-file overwrite="true" parent="CFBundleDisplayName" platform="ios" target="*-Info.plist">
+            <string>InstaLauncher</string>
+        </config-file>
         <config-file overwrite="true" parent="NSBluetoothPeripheralUsageDescription" platform="ios" target="*-Info.plist">
             <string>This app need to access bluetooth services</string>
         </config-file>
@@ -160,6 +163,9 @@
         <config-file overwrite="true" parent="NSFaceIDUsageDescription" platform="ios" target="*-Info.plist">
             <string>For easy authentication</string>
         </config-file>
+        <config-file overwrite="true" parent="NSMicrophoneUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app requires to acces your microphone</string>
+        </config-file>
         <config-file parent="LSApplicationQueriesSchemes" platform="ios" target="*-Info.plist">
             <array>
                 <string>twitter</string>
@@ -176,6 +182,14 @@
                 <string>linkedin-sdk2</string>
                 <string>linkedin-sdk</string>
             </array>
+        </config-file>
+        <config-file parent="NSBonjourServices" platform="ios" target="*-Info.plist">
+            <array>
+                <string>_http._tcp</string>
+            </array>
+        </config-file>
+        <config-file overwrite="true" parent="NSLocalNetworkUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app requires access to the local network to check the connection and manage data synchronization</string>
         </config-file>
     </platform>
     <plugin name="cordova-plugin-appavailability" spec="~0.4.2" />
