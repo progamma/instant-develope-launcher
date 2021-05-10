@@ -29,63 +29,87 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 @implementation FileOpener2
 @synthesize controller = docController;
 
-- (void) open: (CDVInvokedUrlCommand*)command {
+CDVPluginResult* pluginResult = nil;
+NSString* callbackId = nil;
 
-    NSString *path = [[command.arguments objectAtIndex:0] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-	NSString *contentType = nil;
+- (void) open: (CDVInvokedUrlCommand*)command {
+	callbackId = command.callbackId;
+	NSString *path = [command.arguments objectAtIndex:0];
+	NSString *contentType = [command.arguments objectAtIndex:1];
 	BOOL showPreview = YES;
 
-	if([command.arguments count] == 2) { // Includes contentType
-		contentType = [command.arguments objectAtIndex:1];
-	}
-
-	if ([command.arguments count] == 3) {
+	if ([command.arguments count] >= 3) {
 		showPreview = [[command.arguments objectAtIndex:2] boolValue];
 	}
 
 	CDVViewController* cont = (CDVViewController*)[super viewController];
 	self.cdvViewController = cont;
+	NSString *uti = nil;
 
-	NSArray *dotParts = [path componentsSeparatedByString:@"."];
-	NSString *fileExt = [dotParts lastObject];
+	if ([contentType length] == 0) {
+		NSArray *dotParts = [path componentsSeparatedByString:@"."];
+		NSString *fileExt = [dotParts lastObject];
 
-	NSString *uti = (__bridge NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExt, NULL);
+		uti = (__bridge NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExt, NULL);
+	} else {
+		uti = (__bridge NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, (__bridge CFStringRef)contentType, NULL);
+	}
 
 	dispatch_async(dispatch_get_main_queue(), ^{
-		NSURL *fileURL = [NSURL URLWithString:path];
+		NSURL *fileURL = NULL;
+		NSString *decodedPath = [path stringByRemovingPercentEncoding];
+
+		if ([path isEqualToString:decodedPath]) {
+			NSLog(@"Path parameter not encoded. Building file URL encoding it...");
+			fileURL = [NSURL fileURLWithPath:[path stringByReplacingOccurrencesOfString:@"file://" withString:@""]];;
+		} else {
+			NSLog(@"Path parameter already encoded. Building file URL without encoding it...");
+			fileURL = [NSURL URLWithString:path];
+		}
 
 		localFile = fileURL.path;
 
-	    NSLog(@"looking for file at %@", fileURL);
-	    NSFileManager *fm = [NSFileManager defaultManager];
-	    if(![fm fileExistsAtPath:localFile]) {
+		NSLog(@"looking for file at %@", fileURL);
+		NSFileManager *fm = [NSFileManager defaultManager];
+
+    	if (![fm fileExistsAtPath:localFile]) {
 	    	NSDictionary *jsonObj = @{@"status" : @"9",
 	    	@"message" : @"File does not exist"};
 	    	CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:jsonObj];
-	      	[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-	      	return;
+	    	[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+	    	return;
     	}
 
 		docController = [UIDocumentInteractionController  interactionControllerWithURL:fileURL];
 		docController.delegate = self;
 		docController.UTI = uti;
 
-		CDVPluginResult* pluginResult = nil;
-
 		//Opens the file preview
+		CGRect rect;
+
+		if ([command.arguments count] >= 4) {
+			NSArray *positionValues = [command.arguments objectAtIndex:3];
+
+			if (![positionValues isEqual:[NSNull null]] && [positionValues count] >= 2) {
+				rect = CGRectMake(0, 0, [[positionValues objectAtIndex:0] floatValue], [[positionValues objectAtIndex:1] floatValue]);
+			} else {
+				rect = CGRectMake(0, 0, 0, 0);
+			}
+		} else {
+			rect = CGRectMake(0, 0, cont.view.bounds.size.width, cont.view.bounds.size.height);
+		}
+
 		BOOL wasOpened = NO;
 
 		if (showPreview) {
 			wasOpened = [docController presentPreviewAnimated: NO];
 		} else {
 			CDVViewController* cont = self.cdvViewController;
-			CGRect rect = CGRectMake(0, 0, cont.view.bounds.size.width, cont.view.bounds.size.height);
 			wasOpened = [docController presentOpenInMenuFromRect:rect inView:cont.view animated:YES];
 		}
 
-		if(wasOpened) {
+		if (wasOpened) {
 			pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: @""];
-			//NSLog(@"Success");
 		} else {
 			NSDictionary *jsonObj = [ [NSDictionary alloc]
 				initWithObjectsAndKeys :
@@ -94,15 +118,34 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 				nil
 			];
 			pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:jsonObj];
+        	[self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 		}
-		[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 	});
 }
 
 @end
 
 @implementation FileOpener2 (UIDocumentInteractionControllerDelegate)
-	- (UIViewController *)documentInteractionControllerViewControllerForPreview:(UIDocumentInteractionController *)controller {
-		return self.cdvViewController;
+- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
+	[self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+}
+
+- (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)controller {
+	[self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+}
+
+- (UIViewController *)documentInteractionControllerViewControllerForPreview:(UIDocumentInteractionController *)controller {
+	UIViewController *presentingViewController = self.viewController;
+
+	if (presentingViewController.view.window != [UIApplication sharedApplication].keyWindow) {
+		presentingViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
 	}
+
+	while (presentingViewController.presentedViewController != nil && ![presentingViewController.presentedViewController isBeingDismissed]) {
+		presentingViewController = presentingViewController.presentedViewController;
+	}
+
+	return presentingViewController;
+}
+
 @end

@@ -36,9 +36,9 @@ Plugin.Shelldriverhandler.adaptUrl = function (url)
   if (!Shell.isIOS() || !Shell.localPort || !Shell.localToken)
     return url;
   //
-  var idx = url.indexOf("Library/NoCloud");
+  let idx = url.indexOf("Library/NoCloud");
   if (idx > 0) {
-    var d = cordova.file.dataDirectory + url.substring(idx + 16);
+    let d = cordova.file.dataDirectory + url.substring(idx + 16);
     url = "http://localhost:" + Shell.localPort + "/local-filesystem/" + d.substring(7) + "?" + Shell.localToken;
   }
   return url;
@@ -50,17 +50,17 @@ Plugin.Shelldriverhandler.adaptUrl = function (url)
  */
 Plugin.Shelldriverhandler.exec = function (req)
 {
-  var sd = this.instances[req.params.nid];
+  let sd = this.instances[req.params.nid];
   if (!sd) {
     sd = new Shell.ShellDriver(req.app.name, req.app.root && !req.app.dir);
     this.instances[req.params.nid] = sd;
   }
   //
-  var argsArray = [];
+  let argsArray = [];
   //
   // Deserialize arguments of type File/Directory
-  for (var i = 0; i < req.params.args.length - 1; i++) {
-    var arg = req.params.args[i];
+  for (let i = 0; i < req.params.args.length - 1; i++) {
+    let arg = req.params.args[i];
     if (typeof arg === "object" && arg._t)
       argsArray.push(sd.deserializeObject(arg));
     else
@@ -69,12 +69,12 @@ Plugin.Shelldriverhandler.exec = function (req)
   //
   // Last argument is always the callbackID
   // Prepare a callback function for the instance
-  var cbId = req.params.args[req.params.args.length - 1];
+  let cbId = req.params.args[req.params.args.length - 1];
   argsArray.push(function () {
     req.method = "";
     req.plugin = "shelldriverhandler" + req.params.nid;
-    var args = [];
-    for (var i = 0; i < arguments.length; i++) {
+    let args = [];
+    for (let i = 0; i < arguments.length; i++) {
       args.push(Shell.ShellDriver.decodeError(arguments[i]));
       if (req.params.cid === "httpRequest" && i === 0 && args[0].error)
         args[0].error = Shell.ShellDriver.decodeError(args[0].error);
@@ -184,7 +184,7 @@ Shell.ShellDriver.prototype.getFilePublicUrl = function (file, cb)
       if (err)
         return cb(null, err);
       //
-      var d = file.entry.toURL();
+      let d = file.entry.toURL();
       d = Plugin.Shelldriverhandler.adaptUrl(d);
       cb(d);
     });
@@ -223,7 +223,7 @@ Shell.ShellDriver.prototype.initLocalFs = function (type, cb)
   if (this.fs[type])
     return cb();
   //
-  var datadir = "";
+  let datadir = "";
   if (type === "temp")
     datadir = cordova.file.cacheDirectory;
   else if (type === "resource") {
@@ -261,7 +261,7 @@ Shell.ShellDriver.prototype.checkEntry = function (obj, cb)
   if (obj.entry)
     return cb();
   //
-  var funcName = (obj instanceof Shell.ShellDriver.File ? "getFile" : "getDirectory");
+  let funcName = (obj instanceof Shell.ShellDriver.File ? "getFile" : "getDirectory");
   this.fs[obj.type].root[funcName](obj.path, {create: false}, function (entry) {
     // Save entry object
     obj.entry = entry;
@@ -277,7 +277,7 @@ Shell.ShellDriver.prototype.checkEntry = function (obj, cb)
  */
 Shell.ShellDriver.prototype.createFile = function (file, cb)
 {
-  var create = function () {
+  let create = function () {
     // Sets the attribute "create" to true to create the file
     this.fs[file.type].root.getFile(file.path, {create: true, exclusive: false}, function (entry) {
       // Create the object writer
@@ -446,16 +446,16 @@ Shell.ShellDriver.prototype.read = function (file, length, offset, cb)
   //
   // Setting the correct limit: if length or offset are null take respectively the current position of the
   // reader and the position of the last byte of the file
-  var start = file.readerPosition;
+  let start = file.readerPosition;
   if (typeof offset === "number")
     start = offset;
   //
-  var end = file.fileObject.size;
+  let end = file.fileObject.size;
   if (length)
     end = start + length;
   //
   // Get the part of file
-  var blob = file.fileObject.slice(start, end);
+  let blob = file.fileObject.slice(start, end);
   //
   // If the size of the blob is less than 1, the reader position is beyond the end of file (eof)
   if (blob.size < 1)
@@ -498,7 +498,7 @@ Shell.ShellDriver.prototype.readAll = function (file, cb)
         return cb(null, err);
       //
       file.entry.file(function (f) {
-        var reader = new FileReader(f);
+        let reader = new FileReader(f);
         reader.onloadend = function () {
           cb(reader.result, reader.error);
         };
@@ -528,7 +528,7 @@ Shell.ShellDriver.prototype.write = function (file, data, offset, size, position
   if (position >= 0 && position !== null)
     file.writer.seek(position);
   //
-  var blob;
+  let blob;
   //
   // If "data" is a string
   if (typeof data === "string") {
@@ -578,12 +578,12 @@ Shell.ShellDriver.prototype.copyFile = function (file, newFile, cb)
       return cb(err);
     //
     // Get the parent directory
-    var pathParts = newFile.path.split("/");
-    var dirPath = pathParts.slice(0, pathParts.length - 1).join("/");
+    let pathParts = newFile.path.split("/");
+    let dirPath = pathParts.slice(0, pathParts.length - 1).join("/");
     if (dirPath[0] === "/")
       dirPath = dirPath.substr(1);
     //
-    var newName = pathParts[pathParts.length - 1];
+    let newName = pathParts[pathParts.length - 1];
     //
     // Gets new dir entry
     this.fs[file.type].root.getDirectory(dirPath, {create: false}, function (destinationDirEntry) {
@@ -607,30 +607,40 @@ Shell.ShellDriver.prototype.copyFile = function (file, newFile, cb)
 /**
  * Rename a file or directory
  * @param {File/Directory} obj
- * @param {string} newName
+ * @param {File/Directory} newObj
  * @param {function} cb
  */
-Shell.ShellDriver.prototype.renameObject = function (obj, newName, cb)
+Shell.ShellDriver.prototype.renameObject = function (obj, newObj, cb)
 {
-  // Checks and creates  fs object (if it doesn't exist)
+  // Checks and creates fs object (if it doesn't exist)
   this.initLocalFs(obj.type, function (err) {
     if (err)
       return cb(err);
     //
-    // Checks and sets  the entry property (if it doesn't exist)
+    // If newObj is an object, it has to have the same type as obj
+    if (typeof newObj !== "string" && obj.type !== newObj.type)
+      return cb(new Error("Unable to move file or directory between different file systems"));
+    //
+    // Checks and sets the entry property (if it doesn't exist)
     this.checkEntry(obj, function (err) {
       if (err)
         return cb(err);
       //
-      // Rename
-      obj.entry.getParent(function (parentDirEntry) {
-        obj.entry.moveTo(parentDirEntry, newName, function (newEntry) {
-          // Update the entry
-          obj.entry = newEntry;
-          cb();
-        }, cb); // moveTo error
-      }, cb); // getParent dir error
-    });
+      var getType = obj instanceof Shell.ShellDriver.File ? "getFile" : "getDirectory";
+      //
+      // Get new path keeping in mind that newObj could be an object (file or directory) or a string (for back compatibility)
+      var newPath = newObj.path || obj.path.substring(0, obj.path.lastIndexOf("/") + 1) + newObj;
+      //
+      this.fs[obj.type].root[getType](newPath, {create: true}, function (newEntry) {
+        newEntry.getParent(function (parentDirEntry) {
+          obj.entry.moveTo(parentDirEntry, newPath.split("/").pop(), function (newEntry) {
+            // Update the entry
+            obj.entry = newEntry;
+            cb();
+          }, cb); // moveTo error
+        }, cb); // getParent dir error
+      }, cb); // getFile/getDirectory error
+    }.bind(this));
   }.bind(this));
 };
 
@@ -642,12 +652,12 @@ Shell.ShellDriver.prototype.renameObject = function (obj, newName, cb)
  */
 Shell.ShellDriver.prototype.fileLength = function (file, cb)
 {
-  // Checks and creates  fs object (if it doesn't exist)
+  // Checks and creates fs object (if it doesn't exist)
   this.initLocalFs(file.type, function (err) {
     if (err)
       return cb(null, err);
     //
-    // Checks and sets  the entry property (if it doesn't exist)
+    // Checks and sets the entry property (if it doesn't exist)
     this.checkEntry(file, function (err) {
       if (err)
         return cb(null, err);
@@ -668,12 +678,12 @@ Shell.ShellDriver.prototype.fileLength = function (file, cb)
  */
 Shell.ShellDriver.prototype.fileDateTime = function (file, cb)
 {
-  // Checks and creates  fs object (if it doesn't exist)
+  // Checks and creates fs object (if it doesn't exist)
   this.initLocalFs(file.type, function (err) {
     if (err)
       return cb(null, err);
     //
-    // Checks and sets  the entry property (if it doesn't exist)
+    // Checks and sets the entry property (if it doesn't exist)
     this.checkEntry(file, function (err) {
       if (err)
         return cb(null, err);
@@ -694,12 +704,12 @@ Shell.ShellDriver.prototype.fileDateTime = function (file, cb)
  */
 Shell.ShellDriver.prototype.deleteFile = function (file, cb)
 {
-  // Checks and creates  fs object (if it doesn't exist)
+  // Checks and creates fs object (if it doesn't exist)
   this.initLocalFs(file.type, function (err) {
     if (err)
       return cb(err);
     //
-    // Checks and sets  the entry property (if it doesn't exist)
+    // Checks and sets the entry property (if it doesn't exist)
     this.checkEntry(file, function (err) {
       if (err)
         return cb(err);
@@ -783,7 +793,7 @@ Shell.ShellDriver.prototype.mkDir = function (directory, cb)
 Shell.ShellDriver.prototype.mkDirRecursive = function (entry, folders, cb)
 {
   // Throw out './' or '/' if present on the beginning of our path.
-  var folder = folders.shift();
+  let folder = folders.shift();
   if (folder === "." || folder === "")
     folder = folders.shift();
   //
@@ -830,21 +840,21 @@ Shell.ShellDriver.prototype.dirExists = function (directory, cb)
  */
 Shell.ShellDriver.prototype.copyDir = function (srcDir, dstDir, cb)
 {
-  // Checks and creates  fs object (if it doesn't exist)
+  // Checks and creates fs object (if it doesn't exist)
   this.initLocalFs(srcDir.type, function (err) {
     if (err)
       return cb(err);
     //
     // Get the parent directory
-    var pathParts = dstDir.path.split("/");
-    var dirPath = pathParts.slice(0, pathParts.length - 1).join("/");
+    let pathParts = dstDir.path.split("/");
+    let dirPath = pathParts.slice(0, pathParts.length - 1).join("/");
     if (dirPath[0] === "/")
       dirPath = dirPath.substr(1);
     //
-    var newName = pathParts[pathParts.length - 1];
+    let newName = pathParts[pathParts.length - 1];
     //
     this.fs[srcDir.type].root.getDirectory(dirPath, {create: true}, function (destinationDirEntry) {
-      // Checks and sets  the entry property (if it doesn't exist)
+      // Checks and sets the entry property (if it doesn't exist)
       this.checkEntry(srcDir, function (err) {
         if (err)
           return cb(err);
@@ -884,7 +894,7 @@ Shell.ShellDriver.prototype.readDirectory = function (directory, depth, cb)
         return cb(null, err);
       //
       // Recursive core
-      var readDirRecursive = function (entries, content, cbRec) {
+      let readDirRecursive = function (entries, content, cbRec) {
         // No directory unexplored: end of recursion
         if (!entries.length)
           return cbRec(content);
@@ -900,10 +910,10 @@ Shell.ShellDriver.prototype.readDirectory = function (directory, depth, cb)
         // Reads the current directory
         this.fs[directory.type].root.getDirectory(entries[0].entry.fullPath, {create: false}, function (entry) {
           // Create dirReader object
-          var dirReader = entry.createReader();
+          let dirReader = entry.createReader();
           dirReader.readEntries(function (results) {
             //
-            for (var i = 0; i < results.length; i++) {
+            for (let i = 0; i < results.length; i++) {
               // Add the element to the content array
               content = content.concat(results[i]);
               //
@@ -928,30 +938,30 @@ Shell.ShellDriver.prototype.readDirectory = function (directory, depth, cb)
       depth = depth || 0;
       //
       // Array of files/directory objects
-      var content = [];
+      let content = [];
       //
       // Array of directories yet to be examined
-      var dir = [];
+      let dir = [];
       dir.push({depth: 0, entry: directory.entry});
       //
       readDirRecursive(dir, content, function (entries, err) {
         if (err)
           return cb(null, err);
         //
-        var content = [];
+        let content = [];
         //
         // No file/directory inside
         if (entries.length < 1)
           return cb(content);
         //
         // Order the entries by name
-        var s = "fs/" + this.appName + "/";
-        for (var i = 0; i < entries.length; i++) {
+        let s = "fs/" + this.appName + "/";
+        for (let i = 0; i < entries.length; i++) {
           // Create file/directory object by setting the property correctly
-          var p = entries[i].fullPath.substr(1);
+          let p = entries[i].fullPath.substr(1);
           if (p.startsWith(s))
             p = p.substring(s.length);
-          var object = {path: p, type: entries[i].isFile ? "file" : "directory"};
+          let object = {path: p, type: entries[i].isFile ? "file" : "directory"};
           content.push(object);
         }
         cb(content);
@@ -980,12 +990,12 @@ Shell.ShellDriver.prototype.zipDirectory = function (directory, zipFile, cb)
  */
 Shell.ShellDriver.prototype.removeDirRecursive = function (directory, cb)
 {
-  // Checks and creates  fs object (if it doesn't exist)
+  // Checks and creates fs object (if it doesn't exist)
   this.initLocalFs(directory.type, function (err) {
     if (err)
       return cb(err);
     //
-    // Checks and sets  the entry property (if it doesn't exist)
+    // Checks and sets the entry property (if it doesn't exist)
     this.checkEntry(directory, function (err) {
       // If file not exists it's ok, do nothing
       if (err)
@@ -1013,7 +1023,7 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
   options = Object.assign({responseType: "text"}, options);
   //
   // cordova advanced http allows more http methods
-  var usePlugin = options.usePlugin;
+  let usePlugin = options.usePlugin;
   if (usePlugin === undefined) {
     usePlugin = (method === "GET" || method === "POST" || method === "PUT"
             || method === "DELETE" || method === "PATCH" || method === "HEAD") && Shell.isIOS();
@@ -1025,28 +1035,28 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
   //
   // Extract and encode params from  options
   // * @param {object} obj
-  var parseParams = function (obj) {
-    var str = [];
-    for (var p in obj) {
+  let parseParams = function (obj) {
+    let str = [];
+    for (let p in obj) {
       if (obj.hasOwnProperty(p))
         str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
     }
     return str.join("&");
   };
   //
-  var uri = url.url;
+  let uri = url.url;
   //
   // Multipart request
-  var multiPart = false;
+  let multiPart = false;
   //
   // Download
-  var download = false;
+  let download = false;
   //
   // Upload
-  var upload = false;
+  let upload = false;
   //
   // Creates request object
-  var req = new XMLHttpRequest();
+  let req = new XMLHttpRequest();
   //
   // Checks case
   switch (method) {
@@ -1083,23 +1093,23 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
     multiPart = false;
   //
   // Create the complete query string
-  var params = parseParams(options.params);
+  let params = parseParams(options.params);
   //
   // Add it to the url (for GET method)
   if (method !== "POST" && params)
     uri += (uri.indexOf("?") > -1 ? "&" : "?") + params;
   //
   if (upload || download) {
-    var filePath = cordova.file[options._file.type === "temp" ? "cacheDirectory" : "dataDirectory"];
+    let filePath = cordova.file[options._file.type === "temp" ? "cacheDirectory" : "dataDirectory"];
     filePath += "fs/" + this.appName + "/" + options._file.path;
-    var fileTransfer = new FileTransfer();
+    let fileTransfer = new FileTransfer();
     //
     if (download) {
       fileTransfer.download(
               uri,
               filePath,
               function (entry) {
-                var d = entry.toURL();
+                let d = entry.toURL();
                 d = Plugin.Shelldriverhandler.adaptUrl(d);
                 cb({publicUrl: d});
               },
@@ -1127,7 +1137,7 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
        //chunkedMode: Whether to upload the data in chunked streaming mode. Defaults to true. (Boolean)
        //headers: A map of header name/header values. Use an array to specify more than one value. (Object)
        */
-      var opts = new FileUploadOptions();
+      let opts = new FileUploadOptions();
       opts.fileKey = options._nameField;
       opts.fileName = options._fileName;
       opts.httpMethod = "POST";
@@ -1164,7 +1174,7 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
   // To handle better response, want receive binary data
   req.responseType = (download ? "arraybuffer" : options.responseType || "text");
   //
-  var data = null;
+  let data = null;
   //
   // Custom body case
   if (options.body) {
@@ -1195,16 +1205,16 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
     data = new FormData();
     //
     // Add params to formData object
-    var sepParams = params.split("&");
-    for (var i = 0; i < sepParams.length; i++) {
-      var pair = sepParams[i].split('=');
+    let sepParams = params.split("&");
+    for (let i = 0; i < sepParams.length; i++) {
+      let pair = sepParams[i].split('=');
       if (pair[0] && pair[1])
         data.append(decodeURIComponent(pair[0]), decodeURIComponent(pair[1]));
     }
   }
   //
   // Add custom headers
-  for (var index in options.headers)
+  for (let index in options.headers)
     req.setRequestHeader(index, options.headers[index]);
   //
   req.send(data);
@@ -1222,12 +1232,12 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
   // Listen to response load event
   req.onload = function () {
     // default encoding
-    var encoding;
-    var body = req.response;
+    let encoding;
+    let body = req.response;
     //
     if (body instanceof ArrayBuffer && options.responseType === "text") {
       // get encoding
-      var responseContentType = req.getResponseHeader("Content-Type");
+      let responseContentType = req.getResponseHeader("Content-Type");
       if (responseContentType && responseContentType.length >= 3) {
         if (responseContentType.indexOf("text") >= 0 || responseContentType.substring(responseContentType.length - 3,
                 responseContentType.length) === "xml" || responseContentType.indexOf("application/json") >= 0) {
@@ -1243,7 +1253,7 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
       //
       // Encode the response
       if (encoding && typeof TextDecoder !== "undefined") {
-        var dataView = new DataView(req.response);
+        let dataView = new DataView(req.response);
         try {
           body = new TextDecoder(encoding).decode(dataView);
         }
@@ -1255,7 +1265,7 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
     }
     //
     // Create the response object
-    var response = {
+    let response = {
       status: req.status,
       headers: {},
       body: body
@@ -1264,7 +1274,7 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
     // Headers as map
     if (req.getAllResponseHeaders()) {
       req.getAllResponseHeaders().trim().split("\r\n").forEach(function (v) {
-        var ss = v.split(":");
+        let ss = v.split(":");
         response.headers[ss[0].trim()] = ss[1].trim();
       });
     }
@@ -1283,7 +1293,7 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
  */
 Shell.ShellDriver.prototype.httpRequestNative = function (url, method, options, cb)
 {
-  var met = method ? method.toLowerCase() : "get";
+  let met = method ? method.toLowerCase() : "get";
   //
   options.params = options.params || {};
   options.headers = options.headers || {};
@@ -1299,7 +1309,7 @@ Shell.ShellDriver.prototype.httpRequestNative = function (url, method, options, 
     delete options.headers["Content-Type"];
   //
   // Convert header values to string (otherwise the plugin chrashes)
-  for (var h in options.headers) {
+  for (let h in options.headers) {
     options.headers[h] += "";
   }
   //
@@ -1309,8 +1319,8 @@ Shell.ShellDriver.prototype.httpRequestNative = function (url, method, options, 
     // cordova-plugin-advanced-http can send a json body
     // but not any custom body, so we try to see if the
     // specified body can be json parsed
-    var obj = {};
-    var ok = true;
+    let obj = {};
+    let ok = true;
     //
     if (typeof options.body === "object")
       obj = options.body;
@@ -1337,9 +1347,9 @@ Shell.ShellDriver.prototype.httpRequestNative = function (url, method, options, 
     cordova.plugin.http.setDataSerializer('urlencoded');
   }
   //
-  var plugobj = cordova.plugin.http || cordovaHTTP;
+  let plugobj = cordova.plugin.http || cordovaHTTP;
   plugobj[met](url.url, options.params, options.headers, function (ris) {
-    var response = {
+    let response = {
       status: ris.status,
       headers: ris.headers,
       body: ris.data
@@ -1347,7 +1357,7 @@ Shell.ShellDriver.prototype.httpRequestNative = function (url, method, options, 
     //
     cb(response);
   }, function (ris) {
-    var response = {error: new Error(ris.error)};
+    let response = {error: new Error(ris.error)};
     //
     // A correct response passed as an error?
     if (ris.status === 200) {
