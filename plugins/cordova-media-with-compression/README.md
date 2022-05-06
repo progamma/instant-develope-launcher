@@ -28,9 +28,9 @@ Since Android and iOS will record MPEG4 encoded audio with this plugin, the file
 
 A .m4a file extension is required.  
 
-The reduction in file size is required for efficient online/offline storage and retrieval of the audio files. The smaller file size allows the audio file to be efficiently (smaller payload) uploaded to a server for storage and retrieved (while the device is online) for storage within the device file system for offline (disconnected) playback. This is a feature supported by Alpha Anywhere from [Alpha Software] [alphaurl].
+The reduction in file size is required for efficient online/offline storage and retrieval of the audio files. The smaller file size allows the audio file to be efficiently (smaller payload) uploaded to a server for storage and retrieved (while the device is online) for storage within the device file system for offline (disconnected) playback. This is a feature supported by Alpha Anywhere.
 
-[alphaurl]: http://www.alphasoftware.com
+This plugin is tightly integrated within the [Alpha Anywhere](http://www.alphasoftware.com) PhoneGap App Builder. Alpha Anywhere is a Rapid Mobile Application Development and Deployment platform.
 
 New methods include (iOS and Android only):
 

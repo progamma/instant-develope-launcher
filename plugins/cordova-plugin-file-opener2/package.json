@@ -1,35 +1,7 @@
 {
-  "_from": "cordova-plugin-file-opener2@3.0.5",
-  "_id": "cordova-plugin-file-opener2@3.0.5",
-  "_inBundle": false,
-  "_integrity": "sha512-tjLHDamH5+y0bJZYVe2967L1S4R8tL4Y0rJUzJGoxsyiw3FUlrJNS199POOpzZZ6Xhlntn9a2o7+84r1dMN21A==",
-  "_location": "/cordova-plugin-file-opener2",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "cordova-plugin-file-opener2@3.0.5",
-    "name": "cordova-plugin-file-opener2",
-    "escapedName": "cordova-plugin-file-opener2",
-    "rawSpec": "3.0.5",
-    "saveSpec": null,
-    "fetchSpec": "3.0.5"
-  },
-  "_requiredBy": [
-    "#USER",
-    "/"
-  ],
-  "_resolved": "https://registry.npmjs.org/cordova-plugin-file-opener2/-/cordova-plugin-file-opener2-3.0.5.tgz",
-  "_shasum": "3bf481a724bcec9cfa2257a71915309df5ea5b4d",
-  "_spec": "cordova-plugin-file-opener2@3.0.5",
-  "_where": "/Users/giuseppelanzi/Pro Gamma/github/inde-launcher",
-  "author": {
-    "name": "pwlin05@gmail.com"
-  },
-  "bugs": {
-    "url": "https://github.com/pwlin/cordova-plugin-file-opener2/issues"
-  },
-  "bundleDependencies": false,
+  "name": "cordova-plugin-file-opener2",
+  "version": "3.0.5",
+  "description": "A File Opener Plugin for Cordova. (The Original Version)",
   "cordova": {
     "id": "cordova-plugin-file-opener2",
     "platforms": [
@@ -39,12 +11,10 @@
       "electron"
     ]
   },
-  "deprecated": false,
-  "description": "A File Opener Plugin for Cordova. (The Original Version)",
-  "engines": {
-    "cordova": ">=6.0.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pwlin/cordova-plugin-file-opener2.git"
   },
-  "homepage": "https://github.com/pwlin/cordova-plugin-file-opener2#readme",
   "keywords": [
     "ecosystem:cordova",
     "cordova-android",
@@ -52,11 +22,15 @@
     "cordova-windows",
     "cordova-electron"
   ],
-  "license": "MIT",
-  "name": "cordova-plugin-file-opener2",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pwlin/cordova-plugin-file-opener2.git"
+  "engines": {
+    "cordova": ">=6.0.0"
   },
-  "version": "3.0.5"
+  "author": {
+    "name": "pwlin05@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pwlin/cordova-plugin-file-opener2/issues"
+  },
+  "homepage": "https://github.com/pwlin/cordova-plugin-file-opener2#readme"
 }

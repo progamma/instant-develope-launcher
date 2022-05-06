@@ -1,7 +1,7 @@
 var fs = require("fs");
-  rootdir = process.cwd(),
-  android_dir = rootdir + "/platforms/android";
-  project_properties_file = android_dir + "/project.properties";
+rootdir = process.cwd();
+android_dir = rootdir + "/platforms/android";
+project_properties_file = android_dir + "/project.properties";
 //
 if (fs.existsSync(project_properties_file)) {
   console.log("Handling project.properties");

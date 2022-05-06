@@ -33,31 +33,52 @@ Plugin.Sqlite.openDatabase = function (req)
   //
   // Let's see if the DB is already open: we reuse the same connection because
   // iOS does not support multiple connection on the same sqlite DB
-  for (var p in this.dbs) {
-    var edb = this.dbs[p];
-    if (edb.name === name) {
-      edb.count++;
-      req.setResult(edb.id);
-      var nl = this.addLogEntry({cmd: "openDatabase", id: edb.id, name: name});
-      this.completeLogEntry(nl, {open: false, count: edb.count});
+  for (let id in this.dbs) {
+    let db = this.dbs[id];
+    if (db.name === name) {
+      // If there are pending open database, add current request to queue
+      if (db.pendingOpenQueue)
+        return db.pendingOpenQueue.push(req);
+      //
+      // If database is closing, create pending open database queue
+      if (!db.count) {
+        db.pendingOpenQueue = [req];
+        return;
+      }
+      //
+      db.count++;
+      req.setResult(db.id);
+      //
+      var nl = this.addLogEntry({cmd: "openDatabase", id: db.id, name: name});
+      this.completeLogEntry(nl, {open: false, count: db.count});
       return;
     }
   }
   //
-  var id = (Math.random() + "").substring(2);
+  let id = (Math.random() + "").substring(2);
   var conn = new this.SQLite(name);
-  var dbobj = {id: id, name: name, conn: conn, app: req.app, count: 1, queryCount: 0};
+  var dbobj = {id: id, name: name, conn: conn, app: req.app, count: 1, queryCount: 0, pendingOpenQueue: [req]};
+  this.dbs[id] = dbobj;
+  //
   var nl = this.addLogEntry({cmd: "openDatabase", id: id, name: name});
   conn.open(function (err) {
-    if (err) {
-      req.setError(err.message);
-      this.completeLogEntry(nl, {error: err.message});
+    //
+    // Unlock all pending open database requests
+    for (var i = 0; i < dbobj.pendingOpenQueue.length; i++) {
+      let req = dbobj.pendingOpenQueue[i];
+      if (err) {
+        req.setError(err.message);
+        this.completeLogEntry(nl, {error: err.message});
+      }
+      else {
+        req.setResult(id);
+        this.completeLogEntry(nl);
+      }
     }
-    else {
-      this.dbs[id] = dbobj;
-      req.setResult(id);
-      this.completeLogEntry(nl);
-    }
+    //
+    delete dbobj.pendingOpenQueue;
+    if (err)
+      delete this.dbs[id];
   }.bind(this));
 };
 
@@ -141,15 +162,37 @@ Plugin.Sqlite.closeDatabase = function (req)
     return;
   }
   //
-  // Handle multiple DB open to the same connection
   db.count--;
-  if (db.count > 0) {
+  //
+  // I cannot close if there are other connections or if there are pending queries or if there is a pending begin transaction
+  if (db.count > 0 || db.queryCount > 0 || db.trBeginResult) {
     this.completeLogEntry(nl, {close: false, count: db.count});
     req.setResult("ok");
     return;
   }
   //
+  // If there are pending open database requests, don't close database and unlock them instead
+  if (db.pendingOpenQueue) {
+    delete this.dbs[id];
+    //
+    this.completeLogEntry(nl, {close: false, count: db.count});
+    req.setResult("ok");
+    //
+    for (let i = 0; i < db.pendingOpenQueue.length; i++)
+      Plugin.Sqlite.openDatabase(db.pendingOpenQueue[i]);
+    //
+    return;
+  }
+  //
   db.conn.close(function (err) {
+    delete this.dbs[id];
+    //
+    // If there are pending open database requests unlock them
+    if (db.pendingOpenQueue) {
+      for (let i = 0; i < db.pendingOpenQueue.length; i++)
+        Plugin.Sqlite.openDatabase(db.pendingOpenQueue[i]);
+    }
+    //
     if (err) {
       req.setError(err.message);
       this.completeLogEntry(nl, {error: err.message});
@@ -158,7 +201,6 @@ Plugin.Sqlite.closeDatabase = function (req)
       this.completeLogEntry(nl);
       req.setResult("ok");
     }
-    delete this.dbs[id];
   }.bind(this));
 };
 
@@ -167,37 +209,27 @@ Plugin.Sqlite.closeDatabase = function (req)
  */
 Plugin.Sqlite.query = function (req)
 {
-  var sql = req.params.sql || "";
-  //
   var id = req.params.id;
   var db = this.dbs[id];
-  if (!db) {
-    req.setError("database not open");
-    return;
-  }
+  if (!db)
+    return req.setError("database not open");
   //
+  var sql = req.params.sql || "";
   var isCommit = sql.substring(0, 6) === "commit";
   var isRollback = sql.substring(0, 8) === "rollback";
   var isBegin = sql.substring(0, 5) === "begin";
   //
-  // Let's see if there are open statements. We need to wait for them as
-  // if error occurs and it won't be related to this transaction
-  if (isCommit || isRollback || isBegin) {
-    if (db.queryCount) {
-      if (!db.queryCountTimeout) {
-        var nl = this.addLogEntry({id: id, cmd: "query", sql: sql, error: "waiting 5ms for other queries"});
-        this.completeLogEntry(nl, {count: db.queryCount});
-        db.queryCountTimeout = setTimeout(function () {
-          delete db.queryCountTimeout;
-          Plugin.Sqlite.query(req);
-        }, 5);
-      }
-      return;
-    }
+  // If there are pending statements, remember end transaction request
+  if ((isCommit || isRollback || isBegin) && db.queryCount) {
+    db.pendingQueryQueue = [req];
+    return;
   }
   //
-  // If an error occurred in this transaction, the commit method behaves as rollback
-  // and an exception will be thrown
+  // If there are pending statements, push it in queue
+  if (db.pendingQueryQueue)
+    return db.pendingQueryQueue.push(req);
+  //
+  // If an error occurred in this transaction, the commit method behaves as rollback and an exception will be thrown
   if (db.error && isCommit)
     sql = "rollback";
   //
@@ -255,7 +287,6 @@ Plugin.Sqlite.query = function (req)
         delete db.trBeginResult;
       //
       if (req.cbId) {
-        //
         // if we are closing a transaction and an error occurred, throw it to the client
         if (isCommit && db.error)
           req.setError(db.error);
@@ -265,6 +296,13 @@ Plugin.Sqlite.query = function (req)
         // if we are closing a transaction, reset cached error
         if (isCommit || isRollback)
           delete db.error;
+      }
+      //
+      // If there are no pending queries and there is an end transaction request, unlock it
+      if (!db.queryCount && db.pendingQueryQueue) {
+        let queue = db.pendingQueryQueue;
+        delete db.pendingQueryQueue;
+        queue.forEach(q => Plugin.Sqlite.query(q));
       }
     }
   }.bind(this));
@@ -295,12 +333,16 @@ Plugin.Sqlite.deleteDatabase = function (req)
  */
 Plugin.Sqlite.stopApp = function (app)
 {
-  for (var n in this.dbs) {
-    var db = this.dbs[n];
+  for (var id in this.dbs) {
+    var db = this.dbs[id];
+    //
     if (db.app === app) {
+      delete this.dbs[id];
+      let nl = this.addLogEntry({cmd: "closeDatabase", id: id});
+      //
       db.conn.close(function () {
-      });
-      delete this.dbs[n];
+        this.completeLogEntry(nl);
+      }.bind(this));
     }
   }
 };

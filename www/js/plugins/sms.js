@@ -57,7 +57,15 @@ Plugin.Sms.hasPermission = function (req)
   }
   else {
     sms.hasPermission(function (m) {
-      req.setResult(m);
+      if (!m) {
+        sms.requestPermission(function (res) {
+          req.setResult(res);
+        }, function (err) {
+          req.setResult(err);
+        });
+      }
+      else
+        req.setResult(m);
     }, function (e) {
       req.setResult(e);
     });

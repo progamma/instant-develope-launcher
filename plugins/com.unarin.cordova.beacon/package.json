@@ -1,57 +1,7 @@
 {
-  "_args": [
-    [
-      {
-        "name": "com.unarin.cordova.beacon",
-        "raw": "com.unarin.cordova.beacon",
-        "rawSpec": "",
-        "scope": null,
-        "spec": "latest",
-        "type": "tag"
-      },
-      "/Users/andreamaioli/Documents/INDENG/inde-launcher"
-    ]
-  ],
-  "_from": "com.unarin.cordova.beacon@latest",
-  "_id": "com.unarin.cordova.beacon@3.5.2",
-  "_inCache": true,
-  "_installable": true,
-  "_location": "/com.unarin.cordova.beacon",
-  "_nodeVersion": "8.1.4",
-  "_npmOperationalInternal": {
-    "host": "s3://npm-registry-packages",
-    "tmp": "tmp/com.unarin.cordova.beacon-3.5.2.tgz_1504937041798_0.2270364712458104"
-  },
-  "_npmUser": {
-    "email": "npm@unarin.com",
-    "name": "petermetz"
-  },
-  "_npmVersion": "5.3.0",
-  "_phantomChildren": {},
-  "_requested": {
-    "name": "com.unarin.cordova.beacon",
-    "raw": "com.unarin.cordova.beacon",
-    "rawSpec": "",
-    "scope": null,
-    "spec": "latest",
-    "type": "tag"
-  },
-  "_requiredBy": [
-    "/"
-  ],
-  "_resolved": "https://registry.npmjs.org/com.unarin.cordova.beacon/-/com.unarin.cordova.beacon-3.5.2.tgz",
-  "_shasum": "8245ca2a33f8bb7a3ced2d94da1f8d360486f3c3",
-  "_shrinkwrap": null,
-  "_spec": "com.unarin.cordova.beacon",
-  "_where": "/Users/andreamaioli/Documents/INDENG/inde-launcher",
-  "author": {
-    "email": "peter.metz@unarin.com",
-    "name": "Peter Metz",
-    "url": "Somogyvari"
-  },
-  "bugs": {
-    "url": "https://github.com/petermetz/cordova-plugin-ibeacon/issues"
-  },
+  "name": "com.unarin.cordova.beacon",
+  "version": "3.8.1",
+  "description": "Proximity Beacon Monitoring and Transmission Plugin (supporting iBeacons)",
   "cordova": {
     "id": "com.unarin.cordova.beacon",
     "platforms": [
@@ -59,17 +9,10 @@
       "android"
     ]
   },
-  "dependencies": {},
-  "description": "Proximity Beacon Monitoring and Transmission Plugin (supporting iBeacons)",
-  "devDependencies": {},
-  "directories": {},
-  "dist": {
-    "integrity": "sha512-klEn4pbeWq6UnGAVdoQyrKGwFQeLe4voA1Iswb44WV7dlUIIqg0itiuiN6hqqEu41vVay1U6tTBZOQbOmd4SIQ==",
-    "shasum": "8245ca2a33f8bb7a3ced2d94da1f8d360486f3c3",
-    "tarball": "https://registry.npmjs.org/com.unarin.cordova.beacon/-/com.unarin.cordova.beacon-3.5.2.tgz"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petermetz/cordova-plugin-ibeacon.git"
   },
-  "gitHead": "2eb091c3212e0778fe83db4af20e5de697fad485",
-  "homepage": "https://github.com/petermetz/cordova-plugin-ibeacon",
   "keywords": [
     "cordova",
     "ibeacon",
@@ -80,19 +23,25 @@
     "cordova-ios",
     "cordova-android"
   ],
-  "license": "Apache 2.0",
-  "maintainers": [
-    {
-      "email": "npm@unarin.com",
-      "name": "petermetz"
-    }
-  ],
-  "name": "com.unarin.cordova.beacon",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/petermetz/cordova-plugin-ibeacon.git"
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
-  "version": "3.5.2"
+  "author": "Peter Metz (Somogyvari) <peter.metz@unarin.com>",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/petermetz/cordova-plugin-ibeacon/issues"
+  },
+  "homepage": "https://github.com/petermetz/cordova-plugin-ibeacon",
+  "devDependencies": {
+    "@commitlint/cli": "^7.6.1",
+    "@commitlint/config-conventional": "^7.0.1",
+    "husky": "^2.2.0"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }  
+  }
 }

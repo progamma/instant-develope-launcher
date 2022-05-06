@@ -73,7 +73,7 @@ Plugin.Lscookies.getCookies = function (req)
     lscookies["$device"] = obj;
     //
     // Add info startup params
-    lscookies["$info"] = {launcherID: Shell.config.launcherID, launcherName: Shell.config.launcherName};
+    lscookies["$info"] = {launcherID: Shell.config.launcherID, launcherName: Shell.config.launcherName, launcherVersion: Shell.config.launcherVersion};
     //
     req.app.sendMessage({client: true, id: req.params.mode, cnt: lscookies, destination: req.destination || "app"}, req.orig || "*");
   }

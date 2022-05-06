@@ -1,21 +1,21 @@
 module.exports = {
-  isRecognitionAvailable: function (successCallback, errorCallback) {
+  isRecognitionAvailable: function(successCallback, errorCallback) {
     cordova.exec(successCallback, errorCallback, 'SpeechRecognition', 'isRecognitionAvailable', []);
   },
-  startListening: function (successCallback, errorCallback, options) {
+  startListening: function(successCallback, errorCallback, options) {
     options = options || {};
-    cordova.exec(successCallback, errorCallback, 'SpeechRecognition', 'startListening', [options.language, options.matches, options.prompt, options.showPartial, options.showPopup]);
+    cordova.exec(successCallback, errorCallback, 'SpeechRecognition', 'startListening', [ options.language, options.matches, options.prompt, options.showPartial, options.showPopup ]);
   },
-  stopListening: function (successCallback, errorCallback) {
+  stopListening: function(successCallback, errorCallback) {
     cordova.exec(successCallback, errorCallback, 'SpeechRecognition', 'stopListening', []);
   },
-  getSupportedLanguages: function (successCallback, errorCallback) {
+  getSupportedLanguages: function(successCallback, errorCallback) {
     cordova.exec(successCallback, errorCallback, 'SpeechRecognition', 'getSupportedLanguages', []);
   },
-  hasPermission: function (successCallback, errorCallback, onlyMicrophone) {
-    cordova.exec(successCallback, errorCallback, 'SpeechRecognition', 'hasPermission', [onlyMicrophone]);
+  hasPermission: function(successCallback, errorCallback) {
+    cordova.exec(successCallback, errorCallback, 'SpeechRecognition', 'hasPermission', []);
   },
-  requestPermission: function (successCallback, errorCallback, onlyMicrophone) {
-    cordova.exec(successCallback, errorCallback, 'SpeechRecognition', 'requestPermission', [onlyMicrophone]);
+  requestPermission: function(successCallback, errorCallback) {
+    cordova.exec(successCallback, errorCallback, 'SpeechRecognition', 'requestPermission', []);
   }
 };

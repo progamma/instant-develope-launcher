@@ -104,10 +104,10 @@ static CFIndex WriteDataToStream(NSData* data, CFWriteStreamRef stream)
 {
     [req setValue:@"XMLHttpRequest" forHTTPHeaderField:@"X-Requested-With"];
 
-    NSString* userAgent = [self.commandDelegate userAgent];
-    if (userAgent) {
-        [req setValue:userAgent forHTTPHeaderField:@"User-Agent"];
-    }
+    //NSString* userAgent = [self.commandDelegate userAgent];
+    //if (userAgent) {
+    //    [req setValue:userAgent forHTTPHeaderField:@"User-Agent"];
+    //}
 
     for (NSString* headerName in headers) {
         id value = [headers objectForKey:headerName];
@@ -221,7 +221,7 @@ static CFIndex WriteDataToStream(NSData* data, CFWriteStreamRef stream)
     }
     [postBodyBeforeFile appendData:[[NSString stringWithFormat:@"Content-Length: %ld\r\n\r\n", (long)[fileData length]] dataUsingEncoding:NSUTF8StringEncoding]];
 
-    DLog(@"fileData length: %d", [fileData length]);
+    DLog(@"fileData length: %ld", [fileData length]);
     NSData* postBodyAfterFile = [[NSString stringWithFormat:@"\r\n--%@--\r\n", kFormBoundary] dataUsingEncoding:NSUTF8StringEncoding];
 
     long long totalPayloadLength = [fileData length];

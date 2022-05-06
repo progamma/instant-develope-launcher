@@ -1,65 +1,7 @@
 {
-  "_args": [
-    [
-      {
-        "raw": "https://github.com/gitawego/cordova-screenshot.git",
-        "scope": null,
-        "escapedName": null,
-        "name": null,
-        "rawSpec": "https://github.com/gitawego/cordova-screenshot.git",
-        "spec": "git+https://github.com/gitawego/cordova-screenshot.git",
-        "type": "hosted",
-        "hosted": {
-          "type": "github",
-          "ssh": "git@github.com:gitawego/cordova-screenshot.git",
-          "sshUrl": "git+ssh://git@github.com/gitawego/cordova-screenshot.git",
-          "httpsUrl": "git+https://github.com/gitawego/cordova-screenshot.git",
-          "gitUrl": "git://github.com/gitawego/cordova-screenshot.git",
-          "shortcut": "github:gitawego/cordova-screenshot",
-          "directUrl": "https://raw.githubusercontent.com/gitawego/cordova-screenshot/master/package.json"
-        }
-      },
-      "/Users/andreamaioli/Documents/INDENG/inde-launcher"
-    ]
-  ],
-  "_from": "git+https://github.com/gitawego/cordova-screenshot.git",
-  "_id": "com.darktalker.cordova.screenshot@0.1.6",
-  "_inCache": true,
-  "_location": "/com.darktalker.cordova.screenshot",
-  "_phantomChildren": {},
-  "_requested": {
-    "raw": "https://github.com/gitawego/cordova-screenshot.git",
-    "scope": null,
-    "escapedName": null,
-    "name": null,
-    "rawSpec": "https://github.com/gitawego/cordova-screenshot.git",
-    "spec": "git+https://github.com/gitawego/cordova-screenshot.git",
-    "type": "hosted",
-    "hosted": {
-      "type": "github",
-      "ssh": "git@github.com:gitawego/cordova-screenshot.git",
-      "sshUrl": "git+ssh://git@github.com/gitawego/cordova-screenshot.git",
-      "httpsUrl": "git+https://github.com/gitawego/cordova-screenshot.git",
-      "gitUrl": "git://github.com/gitawego/cordova-screenshot.git",
-      "shortcut": "github:gitawego/cordova-screenshot",
-      "directUrl": "https://raw.githubusercontent.com/gitawego/cordova-screenshot/master/package.json"
-    }
-  },
-  "_requiredBy": [
-    "#USER",
-    "/"
-  ],
-  "_resolved": "git+https://github.com/gitawego/cordova-screenshot.git#1292d2edba1819fdc6f8a93e13dd0ed1d82bb023",
-  "_shasum": "b68f475e9d9c3b3ddd6862e6d8b7015583b97125",
-  "_shrinkwrap": null,
-  "_spec": "https://github.com/gitawego/cordova-screenshot.git",
-  "_where": "/Users/andreamaioli/Documents/INDENG/inde-launcher",
-  "author": {
-    "name": "Hongbo LU"
-  },
-  "bugs": {
-    "url": "https://github.com/gitawego/cordova-screenshot/issues"
-  },
+  "name": "com.darktalker.cordova.screenshot",
+  "version": "0.1.6",
+  "description": "screenshot PhoneGap Plugin for Android",
   "cordova": {
     "id": "com.darktalker.cordova.screenshot",
     "platforms": [
@@ -68,17 +10,10 @@
       "osx"
     ]
   },
-  "dependencies": {},
-  "description": "screenshot PhoneGap Plugin for Android",
-  "devDependencies": {},
-  "engines": [
-    {
-      "name": "cordova",
-      "version": ">=3.0.0"
-    }
-  ],
-  "gitHead": "1292d2edba1819fdc6f8a93e13dd0ed1d82bb023",
-  "homepage": "https://github.com/gitawego/cordova-screenshot#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gitawego/cordova-screenshot.git"
+  },
   "keywords": [
     "cordova",
     "screenshot",
@@ -87,14 +22,22 @@
     "cordova-ios",
     "cordova-osx"
   ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "Hongbo LU",
   "license": "MIT",
-  "name": "com.darktalker.cordova.screenshot",
-  "optionalDependencies": {},
-  "readme": "cordova-screenshot\n==================\n\n[![NPM version](http://img.shields.io/npm/v/com.darktalker.cordova.screenshot.svg?style=flat)](https://www.npmjs.com/package/com.darktalker.cordova.screenshot)\n\n\nThe Screenshot plugin allows your application to take screenshots of the current screen and save them into the phone.\n\n## how to install\n\ninstall it via cordova cli\n\n```\ncordova plugin add https://github.com/gitawego/cordova-screenshot.git\n```\n\nnotice:\nin iOS, only jpg format is supported\nin Android, the default WebView and [Crosswalk](https://crosswalk-project.org/documentation/cordova.html) are both supported\n\n## usage\n\n\n```js\nnavigator.screenshot.save(function(error,res){\n  if(error){\n    console.error(error);\n  }else{\n    console.log('ok',res.filePath);\n  }\n});\n```\ntake screenshot with jpg and custom quality\n```js\nnavigator.screenshot.save(function(error,res){\n  if(error){\n    console.error(error);\n  }else{\n    console.log('ok',res.filePath);\n  }\n},'jpg',50);\n```\n\ndefine a filename\n```js\nnavigator.screenshot.save(function(error,res){\n  if(error){\n    console.error(error);\n  }else{\n    console.log('ok',res.filePath); //should be path/to/myScreenshot.jpg\n  }\n},'jpg',50,'myScreenShot');\n```\n\nscreenshot files are stored in /sdcard/Pictures for android.\n\ntake screenshot and get it as Data URI\n```js\nnavigator.screenshot.URI(function(error,res){\n  if(error){\n    console.error(error);\n  }else{\n    html = '<img style=\"width:50%;\" src=\"'+res.URI+'\">';\n    document.body.innerHTML = html;\n  }\n},50);\n```\n\n## usage in AngularJS\n\n```js\n.service('$cordovaScreenshot', ['$q', function ($q){\n\treturn {\n\t\tcapture: function (filename, extension, quality){\n\t\t\textension = extension || 'jpg';\n\t\t\tquality = quality || '100';\n\n\t\t\tvar defer = $q.defer();\n\t\t\t\n\t\t\tnavigator.screenshot.save(function (error, res){\n\t\t\t\tif (error) {\n\t\t\t\t\tconsole.error(error);\n\t\t\t\t\tdefer.reject(error);\n\t\t\t\t} else {\n\t\t\t\t\tconsole.log('screenshot saved in: ', res.filePath);\n\t\t\t\t\tdefer.resolve(res.filePath);\n\t\t\t\t}\n\t\t\t}, extension, quality, filename);\n\t\t\t\n\t\t\treturn defer.promise;\n\t\t}\n\t};\n}])\n```\n\n## Known Issue\n### in Android platform I receive the black image with crosswalk \n#### solution: \n\nadd this line ``<preference name=\"CrosswalkAnimatable\" value=\"true\" />`` in config.xml, see [bug](https://crosswalk-project.org/jira/browse/XWALK-2233)\n\n\nLicense\n=========\nthis repo uses the MIT license\n",
-  "readmeFilename": "README.md",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gitawego/cordova-screenshot.git"
+  "bugs": {
+    "url": "https://github.com/gitawego/cordova-screenshot/issues"
   },
-  "version": "0.1.6"
+  "homepage": "https://github.com/gitawego/cordova-screenshot#readme",
+  "devDependencies": {
+    "sync-cordova-xml": "^0.4.0"
+  },
+  "scripts": {
+    "version": "sync-cordova-xml package.json plugin.xml --output plugin.xml && git add plugin.xml"
+  }
 }

@@ -1,55 +1,8 @@
 {
-  "_args": [
-    [
-      {
-        "name": "cordova-plugin-device-motion",
-        "raw": "cordova-plugin-device-motion@1.2.5",
-        "rawSpec": "1.2.5",
-        "scope": null,
-        "spec": "1.2.5",
-        "type": "version"
-      },
-      "/Users/andreamaioli/Documents/INDENG/inde-launcher"
-    ]
-  ],
-  "_from": "cordova-plugin-device-motion@1.2.5",
-  "_id": "cordova-plugin-device-motion@1.2.5",
-  "_inCache": true,
-  "_installable": true,
-  "_location": "/cordova-plugin-device-motion",
-  "_nodeVersion": "6.10.1",
-  "_npmOperationalInternal": {
-    "host": "packages-18-east.internal.npmjs.com",
-    "tmp": "tmp/cordova-plugin-device-motion-1.2.5.tgz_1493685634463_0.7949596818070859"
-  },
-  "_npmUser": {
-    "email": "maj.fil@gmail.com",
-    "name": "filmaj"
-  },
-  "_npmVersion": "3.10.10",
-  "_phantomChildren": {},
-  "_requested": {
-    "name": "cordova-plugin-device-motion",
-    "raw": "cordova-plugin-device-motion@1.2.5",
-    "rawSpec": "1.2.5",
-    "scope": null,
-    "spec": "1.2.5",
-    "type": "version"
-  },
-  "_requiredBy": [
-    "/"
-  ],
-  "_resolved": "https://registry.npmjs.org/cordova-plugin-device-motion/-/cordova-plugin-device-motion-1.2.5.tgz",
-  "_shasum": "7b58edd9d550df0a6fb9aefab55b96d5490b1a56",
-  "_shrinkwrap": null,
-  "_spec": "cordova-plugin-device-motion@1.2.5",
-  "_where": "/Users/andreamaioli/Documents/INDENG/inde-launcher",
-  "author": {
-    "name": "Apache Software Foundation"
-  },
-  "bugs": {
-    "url": "https://github.com/apache/cordova-plugin-device-motion/issues"
-  },
+  "name": "cordova-plugin-device-motion",
+  "version": "2.0.1",
+  "description": "[DEPRECATED] Cordova Device Motion Plugin",
+  "types": "./types/index.d.ts",
   "cordova": {
     "id": "cordova-plugin-device-motion",
     "platforms": [
@@ -67,24 +20,13 @@
       "browser"
     ]
   },
-  "dependencies": {},
-  "description": "Cordova Device Motion Plugin",
-  "devDependencies": {
-    "jshint": "^2.6.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apache/cordova-plugin-device-motion"
   },
-  "directories": {},
-  "dist": {
-    "shasum": "7b58edd9d550df0a6fb9aefab55b96d5490b1a56",
-    "tarball": "https://registry.npmjs.org/cordova-plugin-device-motion/-/cordova-plugin-device-motion-1.2.5.tgz"
+  "bugs": {
+    "url": "https://issues.apache.org/jira/browse/CB"
   },
-  "engines": {
-    "cordovaDependencies": {
-      "2.0.0": {
-        "cordova": ">100"
-      }
-    }
-  },
-  "homepage": "https://github.com/apache/cordova-plugin-device-motion#readme",
   "keywords": [
     "cordova",
     "device",
@@ -103,44 +45,20 @@
     "cordova-tizen",
     "cordova-browser"
   ],
-  "license": "Apache-2.0",
-  "maintainers": [
-    {
-      "email": "bowserj@apache.org",
-      "name": "bowserj"
-    },
-    {
-      "email": "csantana23@gmail.com",
-      "name": "csantanapr"
-    },
-    {
-      "email": "maj.fil@gmail.com",
-      "name": "filmaj"
-    },
-    {
-      "email": "purplecabbage@gmail.com",
-      "name": "purplecabbage"
-    },
-    {
-      "email": "shazron@gmail.com",
-      "name": "shazron"
-    },
-    {
-      "email": "stevengill97@gmail.com",
-      "name": "stevegill"
-    }
-  ],
-  "name": "cordova-plugin-device-motion",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/apache/cordova-plugin-device-motion.git"
-  },
   "scripts": {
-    "jshint": "node node_modules/jshint/bin/jshint www && node node_modules/jshint/bin/jshint src && node node_modules/jshint/bin/jshint tests",
-    "test": "npm run jshint"
+    "test": "npm run jshint",
+    "jshint": "node node_modules/jshint/bin/jshint www && node node_modules/jshint/bin/jshint src && node node_modules/jshint/bin/jshint tests"
   },
-  "types": "./types/index.d.ts",
-  "version": "1.2.5"
+  "author": "Apache Software Foundation",
+  "license": "Apache-2.0",
+  "engines": {
+    "cordovaDependencies": {
+      "3.0.0": {
+        "cordova": ">100"
+      }
+    }
+  },
+  "devDependencies": {
+    "jshint": "^2.6.0"
+  }
 }

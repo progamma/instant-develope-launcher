@@ -26,11 +26,15 @@
 
  * Ranging
  * Monitoring
- 
+
 #### Features exclusive to iOS
 
  * Region Monitoring (or geo fencing), works in all app states. 
  * Advertising device as an iBeacon
+
+#### Features exclusive to Android
+ * ARMA filter for distance calculations
+ * Disable request for bluetooth permissions
 
 ### Installation
 
@@ -53,6 +57,8 @@ Since version 3.2 the Klass dependency has been removed and therefore means crea
 On iOS 8, you have to request permissions from the user of your app explicitly. You can do this through the plugin's API.
 See the [LocationManager](https://github.com/petermetz/cordova-plugin-ibeacon/blob/master/www/LocationManager.js)'s 
 related methods: ```requestWhenInUseAuthorization``` and ```requestAlwaysAuthorization``` for further details.
+
+In order to use Advertising (e.g ```startAdvertising```), the iOS-Capability "Location updates" is required. (set in Xcode -> [your Target] -> Capabilities -> Background Modes -> Location updates)
 
 #### Standard [CLLocationManager](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocationManager_Class/CLLocationManager/CLLocationManager.html) functions
 
@@ -269,7 +275,7 @@ cordova.plugins.locationManager.isAdvertisingAvailable()
 
         if (isSupported) {
             cordova.plugins.locationManager.startAdvertising(beaconRegion)
-                .fail(conole.error)
+                .fail(console.error)
                 .done();
         } else {
             console.log("Advertising not supported");
@@ -305,11 +311,77 @@ cordova.plugins.locationManager.isBluetoothEnabled()
 
 ```
 
+##### Specify wildcard UUID (Android only)
+
+```javascript
+var uuid = cordova.plugins.locationManager.BeaconRegion.WILDCARD_UUID; //wildcard
+var identifier = 'SomeIdentifier';
+var major = undefined;
+var minor = undefined;
+var beaconRegion = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor);
+
+var logToDom = function (message) {
+	console.warn(message);
+};
+
+var delegate = new cordova.plugins.locationManager.Delegate();
+
+delegate.didDetermineStateForRegion = function (pluginResult) {
+
+    logToDom('[DOM] didDetermineStateForRegion: ' + JSON.stringify(pluginResult));
+
+    cordova.plugins.locationManager.appendToDeviceLog('[DOM] didDetermineStateForRegion: '
+        + JSON.stringify(pluginResult));
+};
+
+delegate.didStartMonitoringForRegion = function (pluginResult) {
+    console.log('didStartMonitoringForRegion:', pluginResult);
+
+    logToDom('didStartMonitoringForRegion:' + JSON.stringify(pluginResult));
+};
+
+delegate.didRangeBeaconsInRegion = function (pluginResult) {
+    logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
+};
+
+cordova.plugins.locationManager.setDelegate(delegate);
+
+cordova.plugins.locationManager.startMonitoringForRegion(beaconRegion)
+	.fail(function(e) { console.error(e); })
+	.done();
+
+```
+
+##### Enable ARMA filter for distance calculations (Android only)
+
+The underlying library uses the moving average to calculate distance by default, but an ARMA filter can be enabled which will weigh more recent measurements higher than older measurements. It can be enabled by adding the following preference to your `config.xml` file:
+
+```<preference name="com.unarin.cordova.beacon.android.altbeacon.EnableArmaFilter" value="true" />```
+
+#### Disable request for bluetooth permission
+By default, this library requests the user for bluetooth permissions when the app starts. If you would like to request permission in a different way or at a different time, set the following preference in your `config.xml` file.
+
+```<preference name="com.unarin.cordova.beacon.android.altbeacon.RequestBtPermission" value="false" />```
+
+
 ## Contributions
 
 > Contributions are welcome at all times, please make sure that the tests are running without errors
 > before submitting a pull request. The current development branch that you should submit your pull requests against is
 > "v3.x" branch.
+
+This project uses [commitlint](https://github.com/conventional-changelog/commitlint#what-is-commitlint), please ensure all commit messages pass commitlint before submitting a pull request.
+
+### Release checklist
+
+* `CHANGELOG.md` list meaningful changes since last release, use the format of `git log --pretty=oneline --abbrev-commit`
+* `package.json` bump the version
+* `plugin.xml` bump the version
+* Publish to both npm packages (due to historical reasons)
+  * `$ npm publish` (this publishes under `com.unarin.cordova.beacon` in npm)
+  * Edit `name` property in the `package.json` file from `com.unarin.cordova.beacon` to `cordova-plugin-ibeacon` (do not commit the change)
+  * `$ npm publish` again to publish under the legacy package name as well
+  * revert the change you just did in `package.json`
 
 ### How to execute the tests - OS X
 

@@ -69,13 +69,20 @@ Plugin.BackgroundLocation._configure = function (options)
     options = Plugin.BackgroundLocation.DEFAULT;
   //
   this.configured = true;
-  var pthis = this;
   //
-  this.geoObj.configure(function (location) {
-    pthis.notify(location);
-  }, function (error) {
-    pthis.notify(error);
-  }, options);
+  this.geoObj.configure(options);
+  //
+  // Binding notify method as handler for location event
+  this.geoObj.on("location", function (event) {
+    if (Shell.isIOS()) {
+      this.geoObj.startTask(function (taskKey) {
+        this.notify(event);
+        this.geoObj.endTask(taskKey);
+      }.bind(this));
+    }
+    else
+      this.notify(event);
+  }.bind(this));
 };
 
 
@@ -143,26 +150,18 @@ Plugin.BackgroundLocation.clearWatch = function (req)
  */
 Plugin.BackgroundLocation.notify = function (event)
 {
-  var pthis = this;
+  var pthis = Plugin.BackgroundLocation;
   //
-  // set a 20 seconds timer to handle this request
-  if (this.finishTimerID)
-    window.clearTimeout(this.finishTimerID);
-  this.finishTimerID = window.setTimeout(function () {
-    pthis.geoObj.finish();
-    pthis.finishTimerID = undefined;
-  }, 20000);
-  //
-  for (var i = 0; i < this.watchList.length; i++) {
-    var req = this.watchList[i];
+  for (var i = 0; i < pthis.watchList.length; i++) {
+    var req = pthis.watchList[i];
     req.result = event;
     PlugMan.sendEvent(req, "Location");
   }
   //
   // Maybe the shell has crashed and we have still location services enabled...
   // better to stop them
-  if (this.watchList.length === 0) {
-    this.geoObj.stop();
+  if (pthis.watchList.length === 0) {
+    pthis.geoObj.stop();
   }
 };
 
@@ -269,6 +268,20 @@ Plugin.BackgroundLocation.getLogEntries = function (req)
   //
   this.geoObj.getLogEntries(limit, function (entries) {
     req.setResult(entries);
+  }, function (error) {
+    req.setError(error);
+  });
+};
+
+
+/*
+ * Check status of background location service
+ * @param {type} req - pluginmanager.js request obj
+ */
+Plugin.BackgroundLocation.checkStatus = function (req)
+{
+  this.geoObj.checkStatus(function (status) {
+    req.setResult(status);
   }, function (error) {
     req.setError(error);
   });

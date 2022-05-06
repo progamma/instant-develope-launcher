@@ -26,12 +26,12 @@ Plugin.Compass.init = function ()
 
 
 /*
- * Measures the current acceleration
+ * Measures the current heading
  * @param {type} req - pluginmanager.js request obj
  */
 Plugin.Compass.getCurrentHeading = function (req)
 {
-  navigator.accelerometer.getCurrentHeading(function (result) {
+  navigator.compass.getCurrentHeading(function (result) {
     req.setResult(result);
   }, function (error) {
     req.setError(error);
@@ -65,7 +65,7 @@ Plugin.Compass.watchHeading = function (req)
 
 
 /*
- * Clears an acceleration watch for an app
+ * Clears a compass watch for an app
  * @param {type} req - pluginmanager.js request obj
  */
 Plugin.Compass.clearWatch = function (req)

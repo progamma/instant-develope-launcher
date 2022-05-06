@@ -8,6 +8,7 @@ Use to
 * write data to NFC tags
 * send data to other NFC enabled devices
 * receive data from NFC devices
+* send raw commands (ISO 14443-3A, ISO 14443-3A, ISO 14443-4, JIS 6319-4, ISO 15693) to NFC tags
 
 This plugin uses NDEF (NFC Data Exchange Format) for maximum compatibilty between NFC devices, tag types, and operating systems.
 
@@ -51,7 +52,8 @@ Supported Platforms
 
 Edit config.xml to install the plugin for [PhoneGap Build](http://build.phonegap.com).
 
-    <gap:plugin name="phonegap-nfc" source="npm" />
+    <preference name="phonegap-version" value="cli-9.0.0" />
+    <plugin name="phonegap-nfc" source="npm" />
 
 
 Windows Phone 8.1 should use the **windows** platform. The Silverlight based Windows Phone 8 code is no longer being maintained.
@@ -62,13 +64,13 @@ See [Getting Started](https://github.com/chariotsolutions/phonegap-nfc/blob/mast
 
 ## iOS Notes
 
-Reading NFC NDEF tags is supported on iPhone 7 and iPhone 7 Plus running iOS 11. To enable your app to detect NFC tags, turn on the Near Field Communication Tag Reading capability in your Xcode project. Build your application with XCode 9 beta. See the [Apple Documentation](http://help.apple.com/xcode/mac/current/#/dev88ff319e7) for more info.
+Reading NFC NDEF tags is supported on iPhone 7 (and newer) since iOS 11. iOS 13 added support for writing NDEF messages to NFC tags. iOS 13 also adds the ability to get the UID from some NFC tags. On iOS, the user must start a NFC session to scan for a tag. This is different from Android which can constantly scan for NFC tags. The [nfc.scanNdef](#nfcscanndef) and [nfc.scanTag](#nfcscantag) functions start a NFC scanning session. The NFC tag is returned to the caller via a Promise. If your existing code uses the deprecated [nfc.beginSession](#nfcbeginsession), update it to use `nfc.scanNdef`.
 
-Use [nfc.addNdefListener](#nfcaddndeflistener) to read NDEF NFC tags with iOS. Unfortunately, iOS also requires you to begin a session before scanning NFC tag. The JavaScript API contains two new iOS specific functions [nfc.beginSession](#nfcbeginsession) and [nfc.invalidateSession](#nfcinvalidatesession).
+The `scanNdef` function uses [NFCNDEFReaderSession](https://developer.apple.com/documentation/corenfc/nfcndefreadersession) to detect NFC Data Exchange Format (NDEF) tags. `scanTag` uses the newer [NFCTagReaderSession](https://developer.apple.com/documentation/corenfc/nfctagreadersession) available in iOS 13 to detect ISO15693, FeliCa, and MIFARE tags. The `scanTag` function will include the tag UID and tag type for *some* NFC tags along with the NDEF messages. `scanTag` can also read some RFID tags without NDEF messsages. `scanTag` will not scan some NDEF tags including Topaz and Mifare Classic. 
 
-You must call [nfc.beginSession](#nfcbeginsession) before every scan. 
+You must call [nfc.scanNdef](#nfcscanndef) and [nfc.scanTag](#nfcscantag) before every scan. 
 
-The initial iOS version plugin does not support scanning multiple tags (invalidateAfterFirstRead:FALSE) or setting the alertMessage. If you have use cases or suggestions on the best way to support multi-read or alert messages, open a ticket for discussion.
+Writing NFC tags on iOS uses the same [nfc.write](#nfcwrite) function as other platforms. Although it's the same function, the behavior is different on iOS. Calling `nfc.write` on an iOS device will start a new scanning session and write data to the scanned tag.
 
 # NFC
 
@@ -77,11 +79,8 @@ The initial iOS version plugin does not support scanning multiple tags (invalida
 ## Methods
 
 - [nfc.addNdefListener](#nfcaddndeflistener)
-- [nfc.removeNdefListener](#nfcremovendeflistener)
 - [nfc.addTagDiscoveredListener](#nfcaddtagdiscoveredlistener)
-- [nfc.removeTagDiscoveredListener](#nfcremovetagdiscoveredlistener)
 - [nfc.addMimeTypeListener](#nfcaddmimetypelistener)
-- [nfc.removeMimeTypeListener](#nfcremovemimetypelistener)
 - [nfc.addNdefFormatableListener](#nfcaddndefformatablelistener)
 - [nfc.write](#nfcwrite)
 - [nfc.makeReadOnly](#nfcmakereadonly)
@@ -92,8 +91,23 @@ The initial iOS version plugin does not support scanning multiple tags (invalida
 - [nfc.stopHandover](#nfcstophandover)
 - [nfc.enabled](#nfcenabled)
 - [nfc.showSettings](#nfcshowsettings)
-- [nfc.beginSession](#nfcbeginsession)
-- [nfc.invalidateSession](#nfcinvalidatesession)
+- [~~nfc.beginSession~~](#nfcbeginsession)
+- [~~nfc.invalidateSession~~](#nfcinvalidatesession)
+- [nfc.scanNdef](#nfcscanndef)
+- [nfc.scanTag](#nfcscanTag)
+- [nfc.cancelScan](#nfccancelscan)
+
+## ReaderMode
+
+- [nfc.readerMode](#nfcreadermode)
+- [nfc.disableReaderMode](#nfcdisablereadermode)
+
+## Tag Technology Functions
+
+- [nfc.connect](#nfcconnect)
+- [nfc.transceive](#nfctransceive)
+- [nfc.close](#nfcclose)
+- [ISO-DEP example](#tag-technology-functions-1)
 
 ## nfc.addNdefListener
 
@@ -133,6 +147,8 @@ On iOS you must call [beingSession](#nfcbeginsession) before scanning a tag.
 Removes the previously registered event listener for NDEF tags added via `nfc.addNdefListener`.
 
     nfc.removeNdefListener(callback, [onSuccess], [onFailure]);
+
+Removing listeners is not recommended. Instead, consider that your callback can ignore messages you no longer need.
 
 ### Parameters
 
@@ -178,6 +194,8 @@ Note that Windows Phones need the newere NXP PN427 chipset to read non-NDEF tags
 Removes the previously registered event listener added via `nfc.addTagDiscoveredListener`.
 
     nfc.removeTagDiscoveredListener(callback, [onSuccess], [onFailure]);
+
+Removing listeners is not recommended. Instead, consider that your callback can ignore messages you no longer need.
 
 ### Parameters
 
@@ -227,6 +245,8 @@ On Android, MIME types for filtering should always be lower case. (See [IntentFi
 Removes the previously registered event listener added via `nfc.addMimeTypeListener`.
 
     nfc.removeMimeTypeListener(mimeType, callback, [onSuccess], [onFailure]);
+
+Removing listeners is not recommended. Instead, consider that your callback can ignore messages you no longer need.
 
 ### Parameters
 
@@ -286,13 +306,79 @@ A NDEF Message is an array of one or more NDEF Records
 Function `nfc.write` writes an NdefMessage to a NFC tag.
 
 On **Android** this method *must* be called from within an NDEF Event Handler.
+
+On **iOS** this method can be called outside the NDEF Event Handler, it will start a new scanning session. Optionally you can reuse the read session to write data. See example below.
+
 On **Windows** this method *may* be called from within the NDEF Event Handler.
 
 On **Windows Phone 8.1** this method should be called outside the NDEF Event Handler, otherwise Windows tries to read the tag contents as you are writing to the tag.
 
+### Examples
+
+#### Android
+
+On Android, write must be called inside an event handler
+
+    function onNfc(nfcEvent) {
+    
+        console.log(nfcEvent.tag);
+        
+        var message = [
+            ndef.textRecord(new String(new Date()))
+        ];
+        
+        nfc.write(
+            message,
+            success => console.log('wrote data to tag'),
+            error => console.log(error)
+        );
+
+    nfc.addNdefListener(onNfc);
+
+
+#### iOS - Simple
+
+Calling `nfc.write` on iOS will create a new session and write data when the user taps a NFC tag
+
+        var message = [
+            ndef.textRecord("Hello, world")
+        ];
+
+        nfc.write(
+            message,
+            success => console.log('wrote data to tag'),
+            error => console.log(error)
+        );
+
+#### iOS - Read and Write
+
+On iOS you can optionally write to NFC tag using the read session
+
+        try {
+            let tag = await nfc.scanNdef({ keepSessionOpen: true});
+
+            // you can read tag data here
+            console.log(tag);
+            
+            // this example writes a new message with a timestamp
+            var message = [
+                ndef.textRecord(new String(new Date()))
+            ];
+
+            nfc.write(
+                message,
+                success => console.log('wrote data to tag'),
+                error => console.log(error)
+            );
+
+        } catch (err) {
+            console.log(err);
+        }
+
 ### Supported Platforms
 
 - Android
+- iOS
 - Windows
 - BlackBerry 7
 - Windows Phone 8
@@ -529,13 +615,17 @@ Windows will return **NO_NFC_OR_NFC_DISABLED** when NFC is not present or disabl
 
 ## nfc.beginSession
 
+**`beginSession` is deprecated. Use `scanNdef` or `scanTag`**
+
 iOS requires you to begin a session before scanning a NFC tag.
 
     nfc.beginSession(success, failure);
 
 ### Description
 
-Function `beginSession` starts the [NFCNDEFReaderSession](https://developer.apple.com/documentation/corenfc/nfcndefreadersession) allowing iOS to scan NFC tags.
+**`beginSession` is deprecated. Use `scanNdef` or `scanTag`**
+
+Function `beginSession` starts the [NFCNDEFReaderSession](https://developer.apple.com/documentation/corenfc/nfcndefreadersession) allowing iOS to scan NFC tags. Use [nfc.addNdefListener](#nfcaddndeflistener) to receive the results of the scan.
 
 ### Parameters
 
@@ -551,6 +641,8 @@ Function `beginSession` starts the [NFCNDEFReaderSession](https://developer.appl
 - iOS
 
 ## nfc.invalidateSession
+
+**`invalidateSession` is deprecated. Use `cancelScan``.**
 
 Invalidate the NFC session.
 
@@ -573,6 +665,346 @@ Function `invalidateSession` stops the [NFCNDEFReaderSession](https://developer.
 
 - iOS
 
+## nfc.scanNdef
+
+Calling `scanNdef` will being an iOS NFC scanning session. The NFC tag will be returned in a Promise.
+
+    nfc.scanNdef();
+
+### Description
+
+Function `scanNdef` starts the [NFCNDEFReaderSession](https://developer.apple.com/documentation/corenfc/nfcndefreadersession)  allowing iOS to scan NFC tags.
+
+### Returns
+
+ - Promise
+
+### Quick Example
+
+    // Promise
+    nfc.scanNdef().then(
+        tag => console.log(JSON.stringify(tag)),
+        err => console.log(err)
+    );
+
+    // Async Await
+    try {
+        let tag = await nfc.scanNdef();
+        console.log(JSON.stringify(tag));
+    } catch (err) {
+        console.log(err);
+    }
+    
+
+### Supported Platforms
+
+- iOS
+
+## nfc.scanTag
+
+Calling `scanTag` will being an iOS NFC scanning session. The NFC tag will be returned in a Promise.
+
+    nfc.scanTag();
+
+### Description
+
+Function `scanTag` starts the [NFCTagReaderSession](https://developer.apple.com/documentation/corenfc/nfctagreadersession) allowing iOS to scan NFC tags.
+
+The Tag reader will attempt to get the UID from the NFC Tag. If can also read the UID from some non-NDEF tags. 
+
+Use [scanNdef](#nfcscanndef) for reading NFC tags on iOS unless you need to get the tag UID.
+
+### Returns
+
+ - Promise
+
+### Quick Example
+
+    // Promise
+    nfc.scanTag().then(
+        tag => {
+            console.log(JSON.stringify(tag))
+            if (tag.id) {
+                console.log(nfc.bytesToHexString(tag.id));
+            }            
+        },
+        err => console.log(err)
+    );
+
+    // Async Await
+    try {
+        let tag = await nfc.scanTag();
+        console.log(JSON.stringify(tag));
+        if (tag.id) {
+            console.log(nfc.bytesToHexString(tag.id));
+        }
+    } catch (err) {
+        console.log(err);
+    }
+    
+
+### Supported Platforms
+
+- iOS
+
+
+## nfc.cancelScan
+
+Invalidate the NFC session started by `scanNdef` or `scanTag`.
+
+    nfc.cancelScan();
+    
+### Description
+
+Function `cancelScan` stops the [NFCReaderSession](https://developer.apple.com/documentation/corenfc/nfcreadersession) returning control to your app.
+
+### Returns
+
+ - Promise
+
+### Quick Example
+
+    nfc.cancelScan().then(
+        success => { console.log('Cancelled NFC session')}, 
+        err => { console.log(`Error cancelling session ${err}`)}
+    );
+
+### Supported Platforms
+
+- iOS
+
+
+# Reader Mode Functions
+
+## nfc.readerMode
+
+Read NFC tags sending the tag data to the success callback.
+
+    nfc.readerMode(flags, readCallback, errorCallback);
+
+### Description
+
+In reader mode, when a NFC tags is read, the results are returned to read callback as a tag object. Note that the normal event listeners are *not* used in reader mode. The callback receives the tag object *without* the event wrapper.
+
+    {
+        "isWritable": true,
+        "id": [4, 96, 117, 74, -17, 34, -128],
+        "techTypes": ["android.nfc.tech.IsoDep", "android.nfc.tech.NfcA", "android.nfc.tech.Ndef"],
+        "type": "NFC Forum Type 4",
+        "canMakeReadOnly": false,
+        "maxSize": 2046,
+        "ndefMessage": [{
+            "id": [],
+            "type": [116, 101, 120, 116, 47, 112, 103],
+            "payload": [72, 101, 108, 108, 111, 32, 80, 104, 111, 110, 101, 71, 97, 112],
+            "tnf": 2
+        }]
+    }
+
+Foreground dispatching and peer-to-peer functions are disabled when reader mode is enabled.
+
+The flags control which tags are scanned. One benefit to reader mode, is the system sounds can be disabled when a NFC tag is scanned by adding the nfc.FLAG_READER_NO_PLATFORM_SOUNDS flag. See Android's [NfcAdapter.enableReaderMode()](https://developer.android.com/reference/android/nfc/NfcAdapter#enableReaderMode(android.app.Activity,%20android.nfc.NfcAdapter.ReaderCallback,%20int,%20android.os.Bundle)) documentation for more info on the flags.
+
+
+### Parameters
+
+- __flags__:  Flags indicating poll technologies and other optional parameters
+- __readCallback__: The callback that is called when a NFC tag is scanned.
+- __errorCallback__: The callback that is called when NFC is disabled or missing.
+
+### Quick Example
+
+    nfc.readerMode(
+        nfc.FLAG_READER_NFC_A | nfc.FLAG_READER_NO_PLATFORM_SOUNDS, 
+        nfcTag => console.log(JSON.stringify(nfcTag)),
+        error => console.log('NFC reader mode failed', error)
+    );
+
+### Supported Platforms
+
+- Android
+
+## nfc.disableReaderMode
+
+Disable NFC reader mode.
+
+    nfc.disableNfcReaderMode(successCallback, errorCallback);
+
+### Description
+
+Disable NFC reader mode.
+
+### Parameters
+
+- __successCallback__: The callback that is called when a NFC reader mode is disabled.
+- __errorCallback__: The callback that is called when NFC reader mode can not be disabled.
+
+### Quick Example
+
+    nfc.disableReaderMode(
+        () => console.log('NFC reader mode disabled'),
+        error => console.log('Error disabling NFC reader mode', error)
+    )
+
+### Supported Platforms
+
+- Android
+
+
+# Tag Technology Functions
+
+The tag technology functions provide access to I/O operations on a tag. Connect to a tag, send commands with transceive, close the tag. See the [Android TagTechnology](https://developer.android.com/reference/android/nfc/tech/TagTechnology) and implementations like [IsoDep](https://developer.android.com/reference/android/nfc/tech/IsoDep) and [NfcV](https://developer.android.com/reference/android/nfc/tech/NfcV) for more details. These new APIs are promise based rather than using callbacks.
+
+#### ISO-DEP (ISO 14443-4) Example
+
+    const DESFIRE_SELECT_PICC = '00 A4 04 00 07 D2 76 00 00 85 01 00';
+    const DESFIRE_SELECT_AID = '90 5A 00 00 03 AA AA AA 00'
+
+    async function handleDesfire(nfcEvent) {
+        
+        const tagId = nfc.bytesToHexString(nfcEvent.tag.id);
+        console.log('Processing', tagId);
+
+        try {
+            await nfc.connect('android.nfc.tech.IsoDep', 500);
+            console.log('connected to', tagId);
+            
+            let response = await nfc.transceive(DESFIRE_SELECT_PICC);
+            ensureResponseIs('9000', response);
+            
+            response = await nfc.transceive(DESFIRE_SELECT_AID);
+            ensureResponseIs('9100', response);
+            // 91a0 means the requested application not found
+
+            alert('Selected application AA AA AA');
+
+            // more transcieve commands go here
+            
+        } catch (error) {
+            alert(error);
+        } finally {
+            await nfc.close();
+            console.log('closed');
+        }
+
+    }
+
+    function ensureResponseIs(expectedResponse, buffer) {
+        const responseString = util.arrayBufferToHexString(buffer);
+        if (expectedResponse !== responseString) {
+            const error = 'Expecting ' + expectedResponse + ' but received ' + responseString;
+            throw error;
+        }
+    }
+
+    function onDeviceReady() {
+        nfc.addTagDiscoveredListener(handleDesfire);
+    }
+
+    document.addEventListener('deviceready', onDeviceReady, false);
+
+## nfc.connect
+
+Connect to the tag and enable I/O operations to the tag from this TagTechnology object.
+
+    nfc.connect(tech);
+
+    nfc.connect(tech, timeout);
+
+### Description
+
+Function `connect` enables I/O operations to the tag from this TagTechnology object. `nfc.connect` should be called after receiving a nfcEvent from the `addTagDiscoveredListener` or the `readerMode` callback. Only one TagTechnology object can be connected to a Tag at a time.
+
+See Android's [TagTechnology.connect()](https://developer.android.com/reference/android/nfc/tech/TagTechnology.html#connect()) for more info.
+
+### Parameters
+
+- __tech__: The tag technology e.g. android.nfc.tech.IsoDep
+- __timeout__: The transceive(byte[]) timeout in milliseconds [optional]
+
+### Returns
+
+ - Promise when the connection is successful, optionally with a maxTransceiveLength attribute in case the tag technology supports it
+
+### Quick Example
+
+    nfc.addTagDiscoveredListener(function(nfcEvent) {
+        nfc.connect('android.nfc.tech.IsoDep', 500).then(
+            () => console.log('connected to', nfc.bytesToHexString(nfcEvent.tag.id)),
+            (error) => console.log('connection failed', error)
+        );
+    })
+
+### Supported Platforms
+
+- Android
+
+## nfc.transceive
+
+Send raw command to the tag and receive the response.
+
+    nfc.transceive(data);
+
+### Description
+
+Function `transceive` sends raw commands to the tag and receives the response. `nfc.connect` must be called before calling `transceive`. Data passed to transceive can be a hex string representation of bytes or an ArrayBuffer. The response is returned as an ArrayBuffer in the promise. 
+
+See Android's documentation [IsoDep.transceive()](https://developer.android.com/reference/android/nfc/tech/IsoDep.html#transceive(byte[])), [NfcV.transceive()](https://developer.android.com/reference/android/nfc/tech/NfcV.html#transceive(byte[])), [MifareUltralight.transceive()](https://developer.android.com/reference/android/nfc/tech/MifareUltralight.html#transceive(byte[])) for more info.
+
+### Parameters
+
+- __data__: a string of hex data or an ArrayBuffer
+
+### Returns
+
+ - Promise with the response data as an ArrayBuffer
+
+### Quick Example
+
+    // Promise style
+    nfc.transceive('90 5A 00 00 03 AA AA AA 00').then(
+        response => console.log(util.arrayBufferToHexString(response)),
+        error => console.log('Error selecting DESFire application')
+    )
+
+    // async await
+    const response = await nfc.transceive('90 5A 00 00 03 AA AA AA 00');
+    console.log('response =',util.arrayBufferToHexString(response));
+
+### Supported Platforms
+
+- Android
+
+## nfc.close
+
+Close TagTechnology connection.
+
+    nfc.close();
+
+### Description
+
+Function `close` disabled I/O operations to the tag from this TagTechnology object, and releases resources.
+
+See Android's [TagTechnology.close()](https://developer.android.com/reference/android/nfc/tech/TagTechnology.html#close()) for more info.
+
+### Parameters
+
+ - none
+
+### Returns
+
+ - Promise when the connection is successfully closed
+
+### Quick Example
+
+    nfc.transceive().then(
+        () => console.log('connection closed'),
+        (error) => console.log('error closing connection', error);
+    )
+
+### Supported Platforms
+
+- Android
 
 # NDEF
 
@@ -861,7 +1293,7 @@ Create a new project
     cordova platform add android
     cordova plugin add ../phonegap-nfc
     cordova plugin add ../phonegap-nfc/tests
-    cordova plugin add http://git-wip-us.apache.org/repos/asf/cordova-plugin-test-framework.git
+    cordova plugin add https://github.com/apache/cordova-plugin-test-framework.git
 
 Change the start page in `config.xml`
 
@@ -899,7 +1331,7 @@ License
 
 The MIT License
 
-Copyright (c) 2011-2017 Chariot Solutions
+Copyright (c) 2011-2020 Chariot Solutions
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

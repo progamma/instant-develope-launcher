@@ -33,13 +33,13 @@ Plugin.Shelldriverhandler.init = function ()
  */
 Plugin.Shelldriverhandler.adaptUrl = function (url)
 {
-  if (!Shell.isIOS() || !Shell.localPort || !Shell.localToken)
+  if (!Shell.isIOS())
     return url;
   //
   let idx = url.indexOf("Library/NoCloud");
   if (idx > 0) {
     let d = cordova.file.dataDirectory + url.substring(idx + 16);
-    url = "http://localhost:" + Shell.localPort + "/local-filesystem/" + d.substring(7) + "?" + Shell.localToken;
+    url = window.WkWebView.convertFilePath(d);
   }
   return url;
 };
@@ -1022,17 +1022,6 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
 {
   options = Object.assign({responseType: "text"}, options);
   //
-  // cordova advanced http allows more http methods
-  let usePlugin = options.usePlugin;
-  if (usePlugin === undefined) {
-    usePlugin = (method === "GET" || method === "POST" || method === "PUT"
-            || method === "DELETE" || method === "PATCH" || method === "HEAD") && Shell.isIOS();
-    if (options.responseType !== "text")
-      usePlugin = false;
-  }
-  if (usePlugin)
-    return this.httpRequestNative(url, method, options, cb);
-  //
   // Extract and encode params from  options
   // * @param {object} obj
   let parseParams = function (obj) {
@@ -1281,93 +1270,4 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
     //
     cb(response);
   };
-};
-
-
-/**
- * Makes an HTTP GET/POST request to a web server
- * @param {object} url
- * @param {string} method
- * @param {object} options
- * @param {function} cb
- */
-Shell.ShellDriver.prototype.httpRequestNative = function (url, method, options, cb)
-{
-  let met = method ? method.toLowerCase() : "get";
-  //
-  options.params = options.params || {};
-  options.headers = options.headers || {};
-  //
-  // Get eventually values for the autentication
-  if (options.authentication)
-    options.headers.Authorization = "Basic " + btoa(options.authentication.username + ":" + options.authentication.password);
-  //
-  // Purge content-length header
-  if (options.headers["Content-Length"])
-    delete options.headers["Content-Length"];
-  if (options.headers["Content-Type"])
-    delete options.headers["Content-Type"];
-  //
-  // Convert header values to string (otherwise the plugin chrashes)
-  for (let h in options.headers) {
-    options.headers[h] += "";
-  }
-  //
-  // handles body special case
-  if (options.body && cordova.plugin.http) {
-    //
-    // cordova-plugin-advanced-http can send a json body
-    // but not any custom body, so we try to see if the
-    // specified body can be json parsed
-    let obj = {};
-    let ok = true;
-    //
-    if (typeof options.body === "object")
-      obj = options.body;
-    else {
-      try {
-        obj = JSON.parse(options.body);
-      }
-      catch (ex) {
-        ok = false;
-      }
-    }
-    //
-    if (ok) {
-      options.params = obj;
-      cordova.plugin.http.setDataSerializer('json');
-    }
-    else {
-      // back compatibility with older versions
-      options.params = options.body;
-      cordova.plugin.http.setDataSerializer('utf8');
-    }
-  }
-  else {
-    cordova.plugin.http.setDataSerializer('urlencoded');
-  }
-  //
-  let plugobj = cordova.plugin.http || cordovaHTTP;
-  plugobj[met](url.url, options.params, options.headers, function (ris) {
-    let response = {
-      status: ris.status,
-      headers: ris.headers,
-      body: ris.data
-    };
-    //
-    cb(response);
-  }, function (ris) {
-    let response = {error: new Error(ris.error)};
-    //
-    // A correct response passed as an error?
-    if (ris.status === 200) {
-      response = {
-        status: ris.status,
-        headers: ris.headers,
-        body: ris.error
-      };
-    }
-    //
-    cb(response);
-  });
 };

@@ -176,7 +176,6 @@ AppDef.prototype.getConfig = function ()
   ris.order = this.order;
   ris.icon = this.icon;
   ris.kick = this.kick;
-  ris.inplace = this.inplace;
   ris.beta = this.beta;
   ris.removable = this.removable;
   ris.buildDate = this.buildDate;
@@ -389,16 +388,12 @@ AppDef.prototype.filter = function (f)
 
 /**
  * Initialize the app
+ * @param {Object} params
  */
 AppDef.prototype.start = function (params)
 {
   this.stopped = false;
   this.startParams = params;
-  //
-  if (this.isInPlace()) {
-    this.startInplace();
-    return;
-  }
   //
   // App already started?
   if (this.iframe) {
@@ -443,14 +438,15 @@ AppDef.prototype.start = function (params)
     var idx = d.indexOf("Library/NoCloud");
     if (idx > 0) {
       var d = cordova.file.dataDirectory + d.substring(idx + 16);
-      d = "http://localhost:" + Shell.localPort + "/local-filesystem/" + d.substring(7);
+      d = window.WkWebView.convertFilePath(d);
     }
   }
   //
+  // Start the process to load the app
   if (this.online)
     this.iframe.src = this.url;
   else
-    this.iframe.src = d + "client/offlineLocal.html?" + this.version + (Shell.localToken ? ("&" + Shell.localToken) : "");
+    this.iframe.src = d + "client/offlineLocal.html?" + this.version;
   //
   var pthis = this;
   //
@@ -574,11 +570,6 @@ AppDef.prototype.stop = function (fromApp)
   }, this.root ? 10 : 700);
   //
   PlugMan.stopApp(this);
-  //
-  // Inplace apps: send terminate signal to server
-  if (this.isInPlace() && this.iframe && Client && Client.mainFrame) {
-    Client.mainFrame.onTerminate();
-  }
 };
 
 
@@ -591,10 +582,9 @@ AppDef.prototype.remove = function ()
     this.iframe.parentNode.removeChild(this.iframe);
   this.iframe = null;
   //
-  // Remove also every script / css added by inplace app
-  // Moreover, restart root apps && inplace apps
-  if (this.isInPlace() || this.root) {
-    var reload = this.root || this.isInPlace();
+  // Restart root apps
+  if (this.root) {
+    var reload = this.root;
     //
     // Terminate session
     if (Client && Client.socket) {
@@ -641,14 +631,6 @@ AppDef.prototype.remove = function ()
       App = undefined;
       Client.Proxy = undefined;
       //
-      // Remove objects
-      if (this.addedObjects) {
-        for (var i = 0; i < this.addedObjects.length; i++) {
-          document.head.removeChild(this.addedObjects[i]);
-        }
-      }
-      this.addedObjects = undefined;
-      //
       // Reset file system instances
       Plugin.Shelldriverhandler.init();
     }
@@ -678,9 +660,7 @@ AppDef.prototype.sendMessage = function (msg, orig)
   //
   msg.source = "shell";
   //
-  if (this.isInPlace() && this.iframe)
-    window.postMessage(msg, orig || "*"); // Inplace apps are in the same window
-  else if (this.iframe && this.iframe.contentWindow)
+  if (this.iframe && this.iframe.contentWindow)
     this.iframe.contentWindow.postMessage(msg, orig || "*");
 };
 
@@ -1014,233 +994,6 @@ AppDef.prototype.uninstall = function (cb)
 
 
 /**
- * Start the app in place, i.e. in the same window
- */
-AppDef.prototype.startInplace = function ()
-{
-  // Already started? Exit.
-  if (this.iframe) {
-    // The app was alreasy loaded but new startParams has arrived
-    // Launch onCommand again
-    if (this.startParams && this.loaded) {
-      this.sendMessage({id: "onCommand", content: {query: this.startParams}});
-      delete this.startParams;
-    }
-    return;
-  }
-  //
-  // Show loading spinner (will be removed on app load)
-  if (this.box)
-    this.box.classList.add("appbox-loading");
-  //
-  var pthis = this;
-  pthis.resourceCount = 0;
-  pthis.resourceError = 0;
-  pthis.scriptToLoad = [];
-  pthis.addedObjects = [];
-  //
-  // Get index.html
-  this.getIndex(function (xd, err) {
-    if (err)
-      console.log(err);
-    if (xd) {
-      //
-      // Load css defer
-      var s = xd.getElementsByTagName("link");
-      for (var i = 0; i < s.length; i++) {
-        if (s[i].type === "text/css")
-          pthis.getResource(s[i].outerHTML, "link");
-      }
-      //
-      // Load script not defer
-      var s = xd.getElementsByTagName("script");
-      for (var i = 0; i < s.length; i++) {
-        pthis.scriptToLoad.push(s[i].outerHTML);
-      }
-      //
-      pthis.loadScripts();
-    }
-  });
-  //
-  this.updateDom();
-};
-
-
-/**
- * Load inplace scripts
- */
-AppDef.prototype.loadScripts = function ()
-{
-  // Extract next script to load
-  var s = this.scriptToLoad.shift();
-  if (s) {
-    var pthis = this;
-    //
-    // Load script and repeat
-    this.getResource(s, "script", function () {
-      pthis.loadScripts();
-    });
-  }
-  else {
-    // No other scripts? Start app
-    this.goInplace();
-  }
-};
-
-
-/**
- * Load index.html
- * @param {function} cb
- */
-AppDef.prototype.getIndex = function (cb)
-{
-  var req = new XMLHttpRequest();
-  var hive = this.url && this.dir ? cordova.file.dataDirectory : "";
-  var url = this.online ? this.url : hive + "apps/" + this.name + "/client/offlineLocal.html?" + this.version;
-  //
-  if (this.name !== "ideapp" && this.online && url.toLowerCase().indexOf("addsid") === -1) {
-    alert("ERROR: addsid not specified in app url query string");
-  }
-  //
-  req.responseType = "text";
-  req.open("GET", url, true);
-  //
-  req.ontimeout = function () {
-    cb(null, "Timeout");
-    return;
-  };
-  //
-  req.onerror = function () {
-    cb(null, "Request error");
-  };
-  //
-  var pthis = this;
-  //
-  req.onload = function () {
-    //
-    if (!this.responseURL && pthis.online) {
-      alert("ERROR: cannot get resource URL. Please update to iOS 9+");
-    }
-    //
-    // Parse html in index.html
-    var dparser = new DOMParser();
-    var doc = dparser.parseFromString(this.responseText, "text/html");
-    //
-    // Parse response url to identify session cookies
-    var parser = document.createElement('a');
-    parser.href = this.responseURL;
-    pthis.resourceHome = parser.origin + parser.pathname;
-    pthis.resourceOrigin = parser.origin;
-    var p = pthis.resourceHome.lastIndexOf("/", pthis.resourceHome.length - 1);
-    pthis.resourceHome = pthis.resourceHome.substring(0, p + 1);
-    pthis.resourceQuery = parser.search.substring(1);
-    //
-    // Go on with inplace activation
-    cb(doc);
-  };
-  //
-  req.send();
-};
-
-
-/**
- * Load a new resource inplace
- * @param {string} hurl
- * @param {string} type - "script" or "link"
- * @param {function} cb
- */
-AppDef.prototype.getResource = function (hurl, type, cb)
-{
-  var pthis = this;
-  //
-  var res = document.createElement(type);
-  //
-  var p = hurl.indexOf("src=") + 4;
-  if (p < 4)
-    p = hurl.indexOf("href=") + 5;
-  if (p < 5) {
-    //
-    // No URL? Go on with next resource
-    if (cb)
-      cb();
-    return;
-  }
-  //
-  // Extract real url from src="http://..." or href="http://..."
-  var ps = hurl.indexOf(" ", p + 1);
-  var url = hurl.substring(p + 1, ps - 1);
-  //
-  // No http? url is relative and needs absolutization
-  if (url.indexOf("http") === -1)
-    url = pthis.resourceHome + url;
-  //
-  // Perform load
-  res.type = "text/" + (type === "script" ? "javascript" : "css");
-  if (type === "link") {
-    res.rel = "stylesheet";
-    res.href = url + "?" + this.version;
-  }
-  else
-    res.src = url + "?" + this.version;
-  //
-  res.onload = function () {
-    // Next resource
-    if (cb)
-      cb();
-  };
-  res.onerror = function () {
-    // Next resource (with error)
-    pthis.resourceError++;
-    if (cb)
-      cb();
-  };
-  //
-  document.head.appendChild(res);
-  pthis.addedObjects.push(res);
-};
-
-
-/**
- * Start the in place app
- */
-AppDef.prototype.goInplace = function ()
-{
-  // Don't stop on error, try to load app anyway
-  if (this.resourceError > 0) {
-    console.log("Resource error: " + this.resourceError);
-  }
-  //
-  // Create app container (app-ui)
-  this.iframe = document.createElement("div");
-  this.iframe.id = "app-ui";
-  this.iframe.className = "app-ui";
-  if (this.root)
-    this.iframe.classList.add("root");
-  //
-  document.body.appendChild(this.iframe);
-  //
-  // Set Client Properties and start app
-  Client.resourceQuery = this.resourceQuery;
-  Client.resourceHome = this.resourceHome;
-  Client.resourceOrigin = this.resourceOrigin;
-  Client.resourceName = this.name;
-  Client.resourceHive = this.url && this.dir ? cordova.file.dataDirectory : "";
-  Client.appVersion = this.version;
-  //
-  // If the app is an "old" one (18.5-) there was a "Proxy" class that
-  // was our class... if that's the case, define Client.Proxy as that class
-  if (!Client.Proxy && typeof Proxy !== "undefined" && Proxy.runApplication)
-    Client.Proxy = Proxy;
-  //
-  if (Client.Proxy)
-    Client.Proxy.createProxy();
-  else
-    Client.createApp();
-};
-
-
-
-/**
  * IOS DOM Parser is bugged. This parsers works like a charm
  * @param {object} DOMParser
  */
@@ -1275,41 +1028,17 @@ AppDef.prototype.updateApp = function ()
   //
   console.log("Updating app " + this.name + "...");
   //
-  if (Shell.isIOS()) {
-    // WKWebView: using plugin to avoid CORS problem
-    var r = this.updateURL + "?" + Math.random();
-    var plugobj = cordova.plugin.http || cordovaHTTP;
-    plugobj.get(encodeURI(r), {}, {}, function (ris) {
-      var j = JSON.parse(ris.data);
-      var res = [].concat(j);
-      AppMan.changeApps(res);
-    }, function (err) {
-      console.log(err.error);
-    });
-  }
-  else {
-    var req = new XMLHttpRequest();
-    //
-    req.responseType = "json";
-    req.open("GET", this.updateURL + "?" + Math.random(), true);
-    //
-    req.onload = function () {
-      var res = [].concat(this.response);
-      AppMan.changeApps(res);
-    };
-    //
-    req.send();
-  }
-};
-
-
-/**
- * Returns true if the app should be activated inplace.
- */
-AppDef.prototype.isInPlace = function ()
-{
-  // Turn off the inplace mode for now because the app never starts inplace, but who knows about the future...
-  return false;
+  var req = new XMLHttpRequest();
+  //
+  req.responseType = "json";
+  req.open("GET", this.updateURL + "?" + Math.random(), true);
+  //
+  req.onload = function () {
+    var res = [].concat(this.response);
+    AppMan.changeApps(res);
+  };
+  //
+  req.send();
 };
 
 
@@ -1332,4 +1061,3 @@ AppDef.prototype.updateParams = function (params)
   }
   Plugin.Lscookies.setCookie({app: this, params: {name: "app_params", value: JSON.stringify(params), exdays: 10000}});
 };
-

@@ -12,7 +12,6 @@ Shell.config = {
   "launcherID": "3d445e19779b4e829bbff9308b11bcf5",
   "launcherName": "Instant Developer Launcher",
   "developerMode": true,
-  "debugMode": false,
   "eacLogin": true,
   "eacSignup": false,
   "eacLogout": true,
@@ -32,6 +31,7 @@ Shell.config = {
     "activeColor": "#257831"
   },
   "plugins": {
+    "SignInWithApple": {},
     "Preferences": {},
     "BarcodeScanner": {},
     "SplashScreen": {},
@@ -61,10 +61,8 @@ Shell.config = {
     "Calendar": {},
     "Touchid": {},
     "Speech": {},
-    "Linkedin": {},
     "Ble": {},
-    "Pdf": {},
-    "SignInWithApple": {}
+    "Pdf": {}
   },
   "strings": {
     "title": "Instant Developer Application Container",

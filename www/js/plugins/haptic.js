@@ -4,7 +4,7 @@
  * All rights reserved
  */
 
-/* global cordova, StatusBar */
+/* global cordova, Haptic Feedback */
 
 var Plugin = Plugin || {};
 
@@ -23,7 +23,7 @@ Plugin.Haptic.init = function ()
 
 
 /*
- * Hides the status bar
+ * Produce haptic feedback
  * @param {type} req - pluginmanager.js request obj
  * @returns {undefined}
  */

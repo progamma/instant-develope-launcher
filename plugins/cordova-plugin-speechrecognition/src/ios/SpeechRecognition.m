@@ -182,20 +182,14 @@
 }
 
 - (void)hasPermission:(CDVInvokedUrlCommand*)command {
+    SFSpeechRecognizerAuthorizationStatus status = [SFSpeechRecognizer authorizationStatus];
+    BOOL speechAuthGranted = (status == SFSpeechRecognizerAuthorizationStatusAuthorized);
 
-    // AM UPDATE IT
-    BOOL onlyMicrophone = [[command argumentAtIndex:0 withDefault:@(NO)] boolValue];
-    if (!onlyMicrophone) {
-      SFSpeechRecognizerAuthorizationStatus status = [SFSpeechRecognizer authorizationStatus];
-      BOOL speechAuthGranted = (status == SFSpeechRecognizerAuthorizationStatusAuthorized);
-
-      if (!speechAuthGranted) {
-          CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:NO];
-          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-          return;
-      }
+    if (!speechAuthGranted) {
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:NO];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
     }
-    // END UPDATE
 
     [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted){
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:granted];
@@ -204,23 +198,6 @@
 }
 
 - (void)requestPermission:(CDVInvokedUrlCommand*)command {
-
-    // AM UPDATE IT
-    BOOL onlyMicrophone = [[command argumentAtIndex:0 withDefault:@(NO)] boolValue];
-    if (onlyMicrophone) {
-      [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted){
-            CDVPluginResult *pluginResult = nil;
-            if (granted) {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-            } else {
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:MESSAGE_ACCESS_DENIED_MICROPHONE];
-            }
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-        }];
-      return;
-    }
-    // END UPDATE
-
     [SFSpeechRecognizer requestAuthorization:^(SFSpeechRecognizerAuthorizationStatus status){
         dispatch_async(dispatch_get_main_queue(), ^{
             CDVPluginResult *pluginResult = nil;

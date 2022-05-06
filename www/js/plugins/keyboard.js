@@ -24,8 +24,8 @@ Plugin.Keyboard.init = function ()
   if (Shell.config.theme.HideKeyboardFormAccessoryBar)
     this.hideFormAccessoryBar(true);
   //
-  window.addEventListener('native.keyboardshow', Plugin.Keyboard.keyboardShowHandler);
-  window.addEventListener('native.keyboardhide', Plugin.Keyboard.keyboardHideHandler);
+  window.addEventListener('keyboardWillShow', Plugin.Keyboard.keyboardShowHandler);
+  window.addEventListener('keyboardWillHide', Plugin.Keyboard.keyboardHideHandler);
 };
 
 /*
@@ -60,6 +60,8 @@ Plugin.Keyboard.disableScroll = function (req)
   var flag = (typeof req === "object") ? req.params.disable : req;
   if (cordova.plugins.Keyboard)
     cordova.plugins.Keyboard.disableScroll(flag);
+  else if (Keyboard && Keyboard.disableScroll)
+    Keyboard.disableScroll(flag);
 };
 
 

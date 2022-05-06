@@ -300,7 +300,7 @@ Plugin.Calendar.listCalendars = function (req)
 
 
 /*
- * get permission
+ * Get permission
  */
 Plugin.Calendar.hasPermission = function (req)
 {
@@ -322,7 +322,7 @@ Plugin.Calendar.hasPermission = function (req)
 
 
 /*
- * ask permission
+ * Ask permission
  */
 Plugin.Calendar.requestPermission = function (req)
 {

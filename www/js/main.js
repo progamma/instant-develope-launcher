@@ -23,12 +23,11 @@ Shell.init = function ()
   Shell.translate();
   //
   Shell.isOffline = false;
-  Shell.debugMode = !!Shell.config.debugMode;
   //
   Shell.initUserInterface();
   //
   // Pre-init native dialogs
-  Plugin.Notification.init();
+  //Plugin.Notification.init();
   //
   if (!cordova) {
     // No cordova: no plugin complete event!
@@ -371,26 +370,6 @@ Shell.pluginComplete = function ()
 {
   var reconnect = window.sessionStorage.getItem("reconnect");
   //
-  // Get the local webserver & token
-  if (navigator.localwebserver) {
-    navigator.localwebserver.getPort(function (e) {
-      Shell.localPort = e;
-      console.log("Local web server port = " + Shell.localPort);
-    });
-    navigator.localwebserver.getToken(function (e) {
-      Shell.localToken = e;
-      console.log("Local web server token = " + Shell.localToken);
-    });
-  }
-  //
-  if (Shell.isIOS() && (!Shell.localPort || !Shell.localToken)) {
-    console.log("WKWebVIew port not acquired, delaying pluginComplete");
-    setTimeout(function () {
-      Shell.pluginComplete();
-    }, 100);
-    return;
-  }
-  //
   if (Plugin.BarcodeScanner) {
     // Can activate qrcode button
     var qrbtn = document.getElementById("btn-qrcode");
@@ -437,10 +416,7 @@ Shell.pluginComplete = function ()
     //
     // Start the root apps
     var rootName = localStorage.getItem("root") || Shell.config.rootApp.name;
-    setTimeout(function () {
-      // wait for localport / localtoken
-      AppMan.startApp(rootName);
-    }, 100);
+    AppMan.startApp(rootName);
   }
   else {
     //
@@ -785,7 +761,7 @@ Shell.openConnection = function ()
   document.getElementById("wait-msg").textContent = _t("connect-msg");
   //
   // We start a websocket connection to inde server
-  Shell.socket = io(server, {forceNew: true, reconnectionAttempts: 5});
+  Shell.socket = io(server, {forceNew: true, reconnectionAttempts: 5, transports: ["websocket"]});
   Shell.socket.emit("deviceMessage", {type: "handShake", data: packet});
   //
   // Listen for server messages
@@ -890,7 +866,8 @@ Shell.getDeviceType = function ()
 Shell.getMobileOperatingSystem = function ()
 {
   var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)) {
+  if (userAgent.match(/iPad/i) || userAgent.match(/iPhone/i) || userAgent.match(/iPod/i)
+          || (navigator.userAgent.match(/Macintosh/i) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1)) {
     return "iOS";
   }
   else if (userAgent.match(/Android/i)) {
@@ -986,34 +963,20 @@ Shell.updateLauncher = function ()
   //
   console.log("Updating launcher...");
   //
-  if (Shell.isIOS()) {
-    // WKWebView: using plugin to avoid CORS problem
-    var r = Shell.config.launcherUpdateURL + "?" + Math.random();
-    var plugobj = cordova.plugin.http || cordovaHTTP;
-    plugobj.get(encodeURI(r), {}, {}, function (ris) {
-      var j = JSON.parse(ris.data);
-      var res = [].concat(j);
+  var req = new XMLHttpRequest();
+  //
+  req.responseType = "json";
+  req.open("GET", Shell.config.launcherUpdateURL + "?" + Math.random(), true);
+  //
+  req.onload = function () {
+    //
+    if (this.response) {
+      var res = [].concat(this.response);
       AppMan.changeApps(res);
-    }, function (err) {
-      console.log(err.error);
-    });
-  }
-  else {
-    var req = new XMLHttpRequest();
-    //
-    req.responseType = "json";
-    req.open("GET", Shell.config.launcherUpdateURL + "?" + Math.random(), true);
-    //
-    req.onload = function () {
-      //
-      if (this.response) {
-        var res = [].concat(this.response);
-        AppMan.changeApps(res);
-      }
-    };
-    //
-    req.send();
-  }
+    }
+  };
+  //
+  req.send();
 };
 
 
@@ -1029,32 +992,19 @@ Shell.updateParams = function ()
   //
   console.log("Updating launcher params...");
   //
-  if (Shell.isIOS()) {
-    // WKWebView: using plugin to avoid CORS problem
-    var r = Shell.config.launcherParamsURL + "?" + Math.random();
-    var plugobj = cordova.plugin.http || cordovaHTTP;
-    plugobj.get(encodeURI(r), {}, {}, function (ris) {
-      var j = JSON.parse(ris.data);
-      AppMan.updateParams(j);
-    }, function (err) {
-      console.log(err.error);
-    });
-  }
-  else {
-    var req = new XMLHttpRequest();
+  var req = new XMLHttpRequest();
+  //
+  req.responseType = "json";
+  req.open("GET", Shell.config.launcherParamsURL + "?" + Math.random(), true);
+  //
+  req.onload = function () {
     //
-    req.responseType = "json";
-    req.open("GET", Shell.config.launcherParamsURL + "?" + Math.random(), true);
-    //
-    req.onload = function () {
-      //
-      if (this.response) {
-        AppMan.updateParams(this.response);
-      }
-    };
-    //
-    req.send();
-  }
+    if (this.response) {
+      AppMan.updateParams(this.response);
+    }
+  };
+  //
+  req.send();
 };
 
 /**

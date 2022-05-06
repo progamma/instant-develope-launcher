@@ -5,7 +5,7 @@
  */
 
 
-/* global cordova */
+/* global cordova, device */
 
 var Plugin = Plugin || {};
 
@@ -47,16 +47,26 @@ Plugin.Inappbrowser.open = function (req)
   var target = req.params.target || "_blank";
   var options = req.params.options || "location=no,enableViewportScale=yes";
   //
-  // if trying to open a pdf on android,
-  // download it and open it with the default app
-  if (href.split("?")[0].substr(-4).toLowerCase() === ".pdf"
-          && device.platform.toLowerCase() === "android" && target === "_blank") {
+  var isAndroid = device.platform.toLowerCase() === "android";
+  var isIOS = device.platform.toLowerCase() === "ios";
+  //
+  // Cordova 10 on iOS use a local webserver available at [your_scheme]:localhost://_app_file_/... to access app files.
+  // But if I want to access an external file I have to use "file:///" protocol
+  if (isIOS) {
+    var localString = "localhost/_app_file_";
+    var idx = href.indexOf(localString);
     //
-    // Remote file or local one?
+    if (idx !== -1)
+      href = "file:///" + href.substr(idx + localString.length);
+  }
+  //
+  var isPdf = href.split("?")[0].substr(-4).toLowerCase() === ".pdf";
+  //
+  // If trying to open a pdf on android download it and open it with the default app
+  if (isPdf && isAndroid && target === "_blank") {
+    // If pdf is remote download and open it
     if (href.indexOf("http://") !== -1 || href.indexOf("https://") !== -1 || href.indexOf("ftp://") !== -1
-            || href.indexOf("ftps://") !== -1 || href.indexOf(("file://") !== -1)) {
-      //
-      // Remote: download the file and open it
+            || href.indexOf("ftps://") !== -1 || href.indexOf("file://") !== -1) {
       var fileURL = cordova.file.externalDataDirectory + "/" + ((href.split("?")[0]).split("/").pop());
       //
       // Trim spaces as they cause problems while opening the file
@@ -66,24 +76,19 @@ Plugin.Inappbrowser.open = function (req)
       //
       fileTransfer.download(uri, fileURL,
               function (entry) {
-                cordova.plugins.fileOpener2.open(entry.toURL(), 'application/pdf');
+                cordova.plugins.fileOpener2.open(entry.toURL(), "application/pdf");
               },
               function (error) {
               }, false);
     }
-    else {
-      // Local file
-      cordova.plugins.fileOpener2.open(href, 'application/pdf');
-    }
+    else // Otherwise use file opener plugin to open it
+      cordova.plugins.fileOpener2.open(href, "application/pdf");
   }
-  else if (options.indexOf("dialog=yes") > -1) {
+  else if (options.indexOf("dialog=yes") > -1)
     cordova.plugins.fileOpener2.showOpenWithDialog(href, target);
-  }
-  else if (options.indexOf("mime=yes") > -1) {
-    cordova.plugins.fileOpener2.open(href, target);
-  }
+  else if (options.indexOf("mime=yes") > -1)
+    cordova.plugins.fileOpener2.open(href, isPdf ? "application/pdf" : target);
   else {
-    //
     // standard window.open...
     // in current inappbrowser, cordova.InAppBrowser is not there
     // in future inappbrowser, window.open will not be cordova.InAppBrowser.open anymore

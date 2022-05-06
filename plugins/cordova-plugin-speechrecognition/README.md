@@ -40,7 +40,7 @@ let options = {
   Number matches,
   String prompt,      // Android only
   Boolean showPopup,  // Android only
-  Boolean showPartial // iOS only
+  Boolean showPartial 
 }
 
 window.plugins.speechRecognition.startListening(
@@ -53,7 +53,7 @@ This method has an options parameter with the following optional values:
 - `matches` {Number} number of return matches (default `5`, on iOS: maximum number of matches)
 - `prompt` {String} displayed prompt of listener popup window (default `""`, Android only)
 - `showPopup` {Boolean} display listener popup window with prompt (default `true`, Android only)
-- `showPartial` {Boolean} Allow partial results to be returned (default `false`, iOS only)
+- `showPartial` {Boolean} Allow partial results to be returned (default `false`)
 
 Result of success callback is an `Array` of recognized terms.
 
@@ -62,8 +62,6 @@ There is a difference between Android and iOS platforms. On Android speech recog
 If you set `showPartial` to `true` on iOS the success callback will be called multiple times until `stopListening()` called.
 
 ### stopListening()
-
-iOS only method.
 
 ```js
 window.plugins.speechRecognition.stopListening(
@@ -129,10 +127,14 @@ window.plugins.speechRecognition.requestPermission(
 This method requests access permission to system resources if it was not granted before.
 
 
-### Ionic 2 Usage
+### Ionic Usage
 
 ```typescript
-import { SpeechRecognition } from 'ionic-native';
+import { SpeechRecognition } from '@ionic-native/speech-recognition';
+
+constructor(private speechRecognition: SpeechRecognition) { }
+
+...
 
 // Check feature available
 SpeechRecognition.isRecognitionAvailable()
@@ -167,9 +169,9 @@ SpeechRecognition.requestPermission()
   )
 ```
 
-Required: [ionic-native](https://www.npmjs.com/package/ionic-native) v2.3.0
+Required: [ionic-native/speech-recognition](https://www.npmjs.com/package/@ionic-native/speech-recognition)
 
-See [Ionic Native documentation](https://ionicframework.com/docs/v2/native/speechrecognition/).
+See [Ionic Native documentation](https://ionicframework.com/docs/native/speech-recognition/).
 
 
 ## Android Quirks

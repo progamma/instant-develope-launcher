@@ -2,49 +2,38 @@
 
 [![NPM version][npm-image]][npm-url]
 [![Downloads][downloads-image]][npm-url]
+[![TotalDownloads][total-downloads-image]][npm-url]
 [![Twitter Follow][twitter-image]][twitter-url]
 
 [npm-image]:http://img.shields.io/npm/v/cordova-plugin-x-socialsharing.svg
 [npm-url]:https://npmjs.org/package/cordova-plugin-x-socialsharing
 [downloads-image]:http://img.shields.io/npm/dm/cordova-plugin-x-socialsharing.svg
+[total-downloads-image]:http://img.shields.io/npm/dt/cordova-plugin-x-socialsharing.svg?label=total%20downloads
 [twitter-image]:https://img.shields.io/twitter/follow/eddyverbruggen.svg?style=social&label=Follow%20me
 [twitter-url]:https://twitter.com/eddyverbruggen
-
-by [@EddyVerbruggen](http://www.twitter.com/eddyverbruggen), [read my blog about this plugin](http://www.x-services.nl/phonegap-share-plugin-facebook-twitter-social-media/754)
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=eddyverbruggen%40gmail%2ecom&lc=US&item_name=cordova%2dplugin%2dsocialsharing&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
 Every now and then kind folks ask me how they can give me all their money. So if you want to contribute to my pension fund, then please go ahead :)
 
-<table width="100%">
-    <tr>
-        <td width="100"><a href="http://plugins.telerik.com/plugin/socialsharing"><img src="http://www.x-services.nl/github-images/telerik-verified-plugins-marketplace.png" width="97px" height="71px" alt="Marketplace logo"/></a></td>
-        <td>For a quick demo app and easy code samples, check out the plugin page at the Verified Plugins Marketplace: http://plugins.telerik.com/plugin/socialsharing</td>
-    </tr>
-</table>
+> Version 6.0.0 is compatible with Android X. See [this issue](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/pull/1039) for details. 5.6.8 is the last version before 6.0.0, so be sure to pick that if you run into Android X-related issues.
 
 ## 0. Index
 
 1. [Description](#1-description)
 2. [Screenshots](#2-screenshots)
 3. [Installation](#3-installation)
-	3. [Automatically (CLI / Plugman)](#automatically-cli--plugman)
-	3. [Manually](#manually)
-	3. [PhoneGap Build](#phonegap-build)
-4. Usage
-  4. [iOS and Android](#4a-usage-on-ios-and-android)
-  4. [Windows Phone](#4b-usage-on-windows-phone)
-  4. [Share-popover on iPad](#4c-share-popover-on-ipad)
-  4. [Whitelisting on iOS 9](#4d-whitelisting-on-ios-9)
-5. [Credits](#5-credits)
-6. [License](#6-license)
+4. [Usage on iOS and Android](#4-usage-on-ios-and-android)
+5. [Web Share API](#5-web-share-api)
+6. [Usage on Windows Phone](#6-usage-on-windows-phone)
+7. [Share-popover on iPad](#7-share-popover-on-ipad)
+8. [Whitelisting on iOS](#8-whitelisting-on-ios)
+9. [NSPhotoLibraryUsageDescription on iOS](#9-nsphotolibraryusagedescription-on-ios)
+10. [Import Types into an Ionic Angular Project](#10-import-types-into-an-ionic-angular-project)
 
 ## 1. Description
 
 This plugin allows you to use the native sharing window of your mobile device.
 
-* Works on Android, version 2.3.3 and higher (probably 2.2 as well).
-* Works on iOS6 and up.
-* Works on Windows Phone 8 since v4.0 of this plugin (maybe even WP7, but I have no such testdevice).
 * Share text, a link, a images (or other files like pdf or ics). Subject is also supported, when the receiving app supports it.
 * Supports sharing files from the internet, the local filesystem, or from the www folder.
 * You can skip the sharing dialog and directly share to Twitter, Facebook, or other apps.
@@ -154,7 +143,7 @@ SocialSharing.js is brought in automatically. Make sure though you include a ref
 <script type="text/javascript" src="cordova.js"></script>
 ```
 
-## 4a. Usage on iOS and Android
+## 4. Usage on iOS and Android
 You can share text, a subject (in case the user selects the email application), (any type and location of) file (like an image), and a link.
 However, what exactly gets shared, depends on the application the user chooses to complete the action. A few examples:
 - Mail: message, subject, file.
@@ -165,7 +154,7 @@ However, what exactly gets shared, depends on the application the user chooses t
 - Facebook iOS: message, image (other filetypes are not supported), link. Beware that since a Fb update in April 2015 sharing a prefilled message is no longer possible when the Fb app is installed (like Android), see #344. Alternative: use `shareViaFacebookWithPasteMessageHint`.
 
 ### Using the share sheet
-Since version 5.1.0 (for iOS and Android) it's recommended to use `shareWithOptions` as it's the most feature rich way to share stuff cross-platform.
+It's recommended to use `shareWithOptions` as it's the most feature rich way to share stuff cross-platform.
 
 It will also tell you if sharing to an app completed and which app that was (if that app plays nice, that is).
 
@@ -176,17 +165,19 @@ var options = {
   subject: 'the subject', // fi. for email
   files: ['', ''], // an array of filenames either locally or remotely
   url: 'https://www.website.com/foo/#bar?a=b',
-  chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
-}
+  chooserTitle: 'Pick an app', // Android only, you can override the default share sheet title
+  appPackageName: 'com.apple.social.facebook', // Android only, you can provide id of the App you want to share with
+  iPadCoordinates: '0,0,0,0' //IOS only iPadCoordinates for where the popover should be point.  Format with x,y,width,height
+};
 
 var onSuccess = function(result) {
   console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-  console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-}
+  console.log("Shared to app: " + result.app); // On Android result.app since plugin version 5.4.0 this is no longer empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+};
 
 var onError = function(msg) {
   console.log("Sharing failed with message: " + msg);
-}
+};
 
 window.plugins.socialsharing.shareWithOptions(options, onSuccess, onError);
 ```
@@ -264,17 +255,25 @@ iOS Quirks:
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 ```
 
-##### Experimental feature: sharing directly to someone
-Available in 5.0.8 and up - please let me know if this works for your device! Open an issue if not..
+##### Sharing directly to someone
+Note that on Android you can only send a 'text' and 'url' directly to someone, so files are ignored.
+
+###### By phone number
 
 ```html
-<button onclick="window.plugins.socialsharing.shareViaWhatsAppToReceiver(receiver, 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp for Addressbook ID 101</button>
+<button onclick="window.plugins.socialsharing.shareViaWhatsAppToPhone('+31611111111', 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp to phone number +31611111111</button>
 ```
-For `receiver` on iOS pass in the Addressbook ID (or 'abid'). You can find those abid's by using the [Cordova Contacts Plugin](https://github.com/apache/cordova-plugin-contacts).
+
+###### By "abid" (iOS) or phone number (Android)
+
+```html
+<button onclick="window.plugins.socialsharing.shareViaWhatsAppToReceiver('101', 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp for Addressbook ID 101</button>
+```
+The first argument on iOS needs to be the Addressbook ID (or 'abid'). You can find those abid's by using the [Cordova Contacts Plugin](https://github.com/apache/cordova-plugin-contacts).
 The result in the success callback of the `find` function is a JSON array of contact objects, use the 'id' you find in those objects.
 Don't pass in an image on iOS because that can't be sent to someone directly unfortunately. Message and URL are fine though.
 
-On Android pass in the phone number of the person you want to send a message to (untested at the moment).
+On Android pass in the phone number of the person you want to send a message to.
 
 #### SMS
 Note that on Android, SMS via Hangouts may not behave correctly
@@ -351,25 +350,16 @@ window.plugins.socialsharing.share(null, null, 'file:///storage/emulated/0/nl.xs
 window.plugins.socialsharing.share(null, null, 'http://domain.com/image.jpg');
 ```
 
-If your app still supports iOS5, you'll want to check whether or not the plugin is available as it only supports iOS6 and up.
-```javascript
-window.plugins.socialsharing.available(function(isAvailable) {
-  // the boolean is only false on iOS < 6
-  if (isAvailable) {
-    // now use any of the share() functions
-  }
-});
-```
-
 If you can't get the plugin to work, have a look at [this demo project](https://github.com/EddyVerbruggen/X-Services-PhoneGap-Build-Plugins-Demo).
 
 #### Notes about the successCallback (you can just ignore the callbacks if you like)
-Since version 3.8 the plugin passes a boolean to the successCallback to let the app know whether or not content was actually shared, or the share widget was closed by the user.
+The plugin passes a boolean to the successCallback to let the app know whether or not content was actually shared, or the share widget was closed by the user.
 On iOS this works as expected (except for Facebook, in case the app is installed), but on Android some sharing targets may return false, even though sharing succeeded. This is not a limitation of the plugin, it's the target app which doesn't play nice.
 To make it more confusing, when sharing via SMS on Android, you'll likely always have the successCallback invoked. Thanks Google.
 
 #### Sharing multiple images (or other files)
-Since version 4.3.0 of this plugin you can pass an array of files to the share and shareVia functions.
+You can pass an array of files to the share and shareVia functions.
+
 ```js
 // sharing multiple images via Facebook (you can mix protocols and file locations)
 window.plugins.socialsharing.shareViaFacebook(
@@ -388,7 +378,8 @@ window.plugins.socialsharing.share(
 Note that a lot of apps support sharing multiple files, but Twitter just doesn't accept more that one file.
 
 #### Saving images to the photo album (iOS only currently)
-Since version 4.3.16 of this plugin you can save an array of images to the camera roll:
+You can save an array of images to the camera roll:
+
 ```js
 window.plugins.socialsharing.saveToPhotoAlbum(
   ['https://www.google.nl/images/srpr/logo4w.png','www/image.gif'],
@@ -429,9 +420,9 @@ Here's the list of available activities you can disable :
  - com.apple.UIKit.activity.AddToReadingList
  - com.apple.UIKit.activity.AirDrop
 
-#### Web Share API
+## 5. Web Share API
 
-Chrome is introducing a new [Web Share API](https://github.com/WICG/web-share) to share data.
+Chrome introduced the [Web Share API](https://github.com/WICG/web-share) to share data:
 
 ```js
 navigator.share({
@@ -447,7 +438,7 @@ navigator.share({
 
 It doesn't provide all the options that the other share methods do but it is spec compliant.
 
-## 4b. Usage on Windows Phone
+## 6. Usage on Windows Phone
 The available methods on WP8 are: `available`, `canShareViaEmail`, `share`, `shareViaEmail` and `shareViaSMS`.
 Currently the first two always return true, but this may change in the future in case I can find a way to truly detect the availability.
 
@@ -470,7 +461,10 @@ Sharing an image (only images from the internet are supported). If you pass more
 <button onclick="window.plugins.socialsharing.share('Optional message', 'Optional title', 'https://www.google.nl/images/srpr/logo4w.png', null)">image only</button>
 ```
 
-## 4c. Share-popover on iPad
+## 7. Share-popover on iPad
+
+> This no longer works since plugin version 5.5.0, see [this issue](https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/issues/1052).
+
 Carlos Sola-Llonch, a user of this plugin, pointed me at an [iOS document](https://developer.apple.com/library/ios/documentation/uikit/reference/UIActivityViewController_Class/Reference/Reference.html)
 stating "On iPad, you must present the view controller in a popover. On iPhone and iPod touch, you must present it modally."
 
@@ -508,16 +502,16 @@ window.plugins.socialsharing.setIPadPopupCoordinates(targetBounds);
 window.plugins.socialsharing.share('Hello from iOS :)')
 ```
 
-## 4d. Whitelisting on iOS 9
+## 8. Whitelisting on iOS
 
-On iOS 9 you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in XCode for something like:
+Since iOS 9 you have to make sure to whitelist the applications you want to use for sharing. Without whitelisting "query schemes", you may get the error callback invoked when calling the `canShareVia` function (and possibly the `shareVia`). You can verify this is a permissions issue by observing the output in Xcode for something like:
 
 > -canOpenURL: failed for URL: "whatsapp://app" - error: "This app is not allowed to query for scheme whatsapp"
 
 You have a few options to prevent this by whitelisting the application you want to share via:
 
 ### Directly editing the .plist file
-This is a stright forward approach - you just manually edit the .plist file - either from within XCode or using a text editor. You can see example entries above (e.g. xyz). While this is simple to do, the changes may be lost when rebuilding the project or tweaking the platform (e.g. upgrading) and is less recomended.
+Manually edit the .plist file - either from within Xcode or using a text editor. You can see example entries above (look for `LSApplicationQueriesSchemes`). While this is simple to do, the changes may be lost when rebuilding the project or tweaking the platform (e.g. upgrading) and is less recommended.
 
 ### Use query schema plugin
 There is a plugin designed specifically to address query schema whitelisting. You can find the plugin and how to use it [here](https://www.npmjs.com/package/cordova-plugin-queries-schemes). In general, after installation, you can change plugin.xml file under the plugin subfolder within the plugins directory of your project to add the required schemas. Here again though, you have to edit an additional file and should take care not to overwrite it when making changes to your project.
@@ -546,13 +540,26 @@ To address query schema issue, after installaing the plugin you can edit the iOS
             </array>
         </config-file>
     </platform>
-</widget>        
+</widget>
 ```
 
 The advantage with this method is that editing is done in the config.xml file which will most often be in your source control anyway and hence, changes to it will be reserved.
 
-## 5. Credits ##
+## 9. NSPhotoLibraryUsageDescription on iOS
 
-This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
-The Android and Windows Phone code was entirely created by the author.
-The first iteration of the iOS code was inspired by [Cameron Lerch](https://github.com/bfcam/phonegap-ios-social-plugin).
+This plugin requires permissions to the users photos. Since iOS 10 it is required that you provide a description for this access.
+
+The plugin configures a default description for you. If you do need to customise it, you can set a Cordova variable when installing:
+
+```
+$ cordova plugin add cordova-plugin-x-socialsharing --variable PHOTO_LIBRARY_USAGE_DESCRIPTION="This app uses your photo library" --variable PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION="This app saves images your photo library"
+```
+
+## 10. Import Types into an Ionic Angular Project
+
+If you do not already have a typings file definition, create one inside your `src` folder, for example`src/typings.d.ts`
+
+Add this reference into your typings file definition:
+```
+/// <reference path="../node_modules/cordova-plugin-x-socialsharing/types/index.d.ts" />
+```

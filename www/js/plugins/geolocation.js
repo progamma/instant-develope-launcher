@@ -31,6 +31,9 @@ Plugin.Geolocation.init = function ()
  */
 Plugin.Geolocation.getCurrentPosition = function (req)
 {
+  var options = req.params.options || {};
+  options.timeout = options.timeout || 5000;
+  //
   navigator.geolocation.getCurrentPosition(function (position) {
     var c = {
       accuracy: position.coords.accuracy || undefined,
@@ -44,7 +47,7 @@ Plugin.Geolocation.getCurrentPosition = function (req)
     req.setResult(c);
   }, function (error) {
     req.setError(error.message);
-  }, req.params.options);
+  }, options);
 };
 
 
@@ -54,6 +57,9 @@ Plugin.Geolocation.getCurrentPosition = function (req)
  */
 Plugin.Geolocation.watchPosition = function (req)
 {
+  var options = req.params.options || {};
+  options.timeout = options.timeout || 5000;
+  //
   // Clean, then set.
   this.clearWatch(req);
   //
@@ -72,7 +78,7 @@ Plugin.Geolocation.watchPosition = function (req)
   }, function (error) {
     req.result = {error: error.message};
     PlugMan.sendEvent(req, "Position");
-  }, req.params.options);
+  }, options);
   //
   // Remember which app requests this watch
   this.watchList.push({id: watchID, app: req.app});

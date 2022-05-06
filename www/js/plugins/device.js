@@ -94,37 +94,10 @@ Plugin.Device.init = function (cb)
     Shell.setOffline(false);
   });
   //
-  // Globalization properties
-  navigator.globalization.getPreferredLanguage(function (language) {
-    pthis.language = language.value;
-  });
-  navigator.globalization.getLocaleName(function (locale) {
-    pthis.locale = locale.value;
-  });
-  navigator.globalization.getNumberPattern(function (pattern) {
-    pthis.currencyPattern = pattern;
-  }, undefined, {type: "currency"});
-  navigator.globalization.getDateNames(function (names) {
-    pthis.monthNames = names.value;
-  }, undefined, {item: "months"});
-  navigator.globalization.getDateNames(function (names) {
-    pthis.dayNames = names.value;
-  }, undefined, {item: "days"});
-  navigator.globalization.getDatePattern(function (pattern) {
-    pthis.timezone = pattern.timezone;
-  });
-  navigator.globalization.getFirstDayOfWeek(function (day) {
-    navigator.globalization.getDateNames(function (names) {
-      pthis.firstDayOfWeek = names.value[day.value - 1];
-    }, undefined, {item: "days"});
-  });
-  navigator.globalization.getNumberPattern(function (pattern) {
-    pthis.numberPattern = pattern;
-  });
-  navigator.globalization.isDayLightSavingsTime(new Date(), function (pattern) {
-    pthis.isDayLightSavingTime = pattern.dst;
+  // Call cb after a while to decrement callback count
+  setTimeout(function () {
     cb();
-  });
+  }, 0);
   //
   // Return true to increment callback count
   return true;
@@ -145,17 +118,9 @@ Plugin.Device.getProp = function (app)
   p.batteryLevel = this.batteryLevel;
   p.isPlugged = this.isPlugged;
   p.networkState = this.networkState;
-  p.language = this.language;
-  p.locale = this.locale;
-  p.currencyPattern = this.currencyPattern;
-  p.monthNames = this.monthNames;
-  p.dayNames = this.dayNames;
-  p.timezone = this.timezone;
-  p.firstDayOfWeek = this.firstDayOfWeek;
-  p.numberPattern = this.numberPattern;
-  p.isDayLightSavingTime = this.isDayLightSavingTime;
   p.launcherID = Shell.config.launcherID;
   p.launcherName = Shell.config.launcherName;
+  p.launcherVersion = Shell.config.launcherVersion;
   //
   // Send the username/authorization token to the app (if any)
   if (Shell.profileData && Shell.profileData.autk)
