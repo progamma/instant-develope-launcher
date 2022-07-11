@@ -81,6 +81,23 @@ module.exports = function (context) {
       //
       fs.writeFileSync(keyboardJava, keyboardJavaContent);
     }
+    //
+    // Fix cordova-plugin-inappbrowser
+    let inAppBrowserJava = rootdir + "/plugins/cordova-plugin-inappbrowser/src/android/InAppBrowser.java";
+    //
+    if (fs.existsSync(inAppBrowserJava)) {
+      let inAppBrowserJavaContent = fs.readFileSync(inAppBrowserJava).toString("utf-8");
+      //
+      if (inAppBrowserJavaContent.indexOf("settings.setAllowFileAccess(true);") === -1) {
+        let oldString = "settings.setPluginState(android.webkit.WebSettings.PluginState.ON);";
+        //
+        let newString = oldString + "\n\t\t\t\t\t\t\t\tsettings.setAllowFileAccess(true);\n";
+        //
+        inAppBrowserJavaContent = inAppBrowserJavaContent.replace(oldString, newString);
+        //
+        fs.writeFileSync(inAppBrowserJava, inAppBrowserJavaContent);
+      }
+    }
   }
   //
   if (ios) {
