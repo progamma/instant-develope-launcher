@@ -192,6 +192,17 @@ Shell.ShellDriver.prototype.getFilePublicUrl = function (file, cb)
 };
 
 
+/**
+ * Given a relative path, return the internal (server) path to the file
+ * @param {File} file
+ * @param {function} cb
+ */
+Shell.ShellDriver.prototype.getFileFullPath = function (file, cb)
+{
+  return cb();
+};
+
+
 /*
  * Deserialize File/Directory
  * @param {Object} obj
